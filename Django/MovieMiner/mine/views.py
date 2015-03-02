@@ -15,6 +15,7 @@ from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
 from mine.models import UserProfile
+from mine.graph_functions import fetch_movies
 
 from social.apps.django_app.utils import psa
 
@@ -92,6 +93,6 @@ class UserProfileViewSet(APIView):
 
 class MovieViewSet(APIView):
     def post(self, request, format=None):
-        print request.data
-        print request.data.get('access_token','')
+        access_token=request.data.get('access_token','')
+        fetch_movies(access_token);
         return Response(request.data, status=status.HTTP_200_OK)
