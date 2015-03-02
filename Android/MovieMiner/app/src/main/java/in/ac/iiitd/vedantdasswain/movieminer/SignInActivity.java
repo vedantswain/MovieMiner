@@ -12,6 +12,8 @@ public class SignInActivity extends FragmentActivity implements MainFragment.OnF
     private MainFragment mainFragment;
     private String TAG="SignInActivity";
 
+    private final String APP_ID="1648330488728020";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,7 @@ public class SignInActivity extends FragmentActivity implements MainFragment.OnF
 
         // Logs 'install' and 'app activate' App Events.
         if(context!=null){
-            com.facebook.AppEventsLogger.activateApp(context, "1648330488728020");
+            com.facebook.AppEventsLogger.activateApp(context,APP_ID );
         }
 
          //AppEventsLogger.activateApp(this);
@@ -74,7 +76,7 @@ public class SignInActivity extends FragmentActivity implements MainFragment.OnF
 
         // Logs 'app deactivate' App Event.
         if(context!=null){
-            com.facebook.AppEventsLogger.deactivateApp(context, "1648330488728020");
+            com.facebook.AppEventsLogger.deactivateApp(context, APP_ID);
         }
     }
 

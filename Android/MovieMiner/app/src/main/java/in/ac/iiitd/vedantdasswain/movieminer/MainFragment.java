@@ -2,8 +2,11 @@ package in.ac.iiitd.vedantdasswain.movieminer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,10 +24,21 @@ import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 
@@ -39,6 +53,16 @@ import java.util.Arrays;
 public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
+    private static final String URL="http://192.168.1.4:8000/";
+    private static final String USER_API=URL+"user-profiles/";
+    private static final String AUTH_API=URL+"api-auth/facebook/";
+    private static final String MOVIES_API=URL+"movies/";
+
+    private static String authToken=""; //Django server token
+    private static String accessToken=""; //Facebook token
+    private static long id;
+    private String username;
+    private GraphUser facebookUser;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -52,6 +76,8 @@ public class MainFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private UiLifecycleHelper uiHelper;
+
+    public JSONObject userObject=new JSONObject();
 
     /**
      * Use this factory method to create a new instance of
@@ -90,6 +116,8 @@ public class MainFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        getCredentials();
+
         uiHelper = new UiLifecycleHelper(getActivity(), callback);
         uiHelper.onCreate(savedInstanceState);
     }
@@ -116,13 +144,17 @@ public class MainFragment extends Fragment {
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     if (user != null) {
+                        accessToken=session.getAccessToken();
+                        Log.v(TAG,"Token: "+accessToken);
+                        sendTokenToBackend(accessToken);
+                        facebookUser=user;
                         // Display the parsed user info
-                        Log.i(TAG,buildUserInfoDisplay(user));
+                        //Log.i(TAG,buildUserInfoDisplay(user));
                     }
                 }
             }).executeAsync();
 
-            facebookRequest(session,"me/movies");
+            //facebookRequest(session,"me/movies?fields=name,id");
 
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
@@ -275,25 +307,189 @@ public class MainFragment extends Fragment {
     private String buildUserInfoDisplay(GraphUser user) {
         Log.i(TAG,"Getting info...");
 
-        StringBuilder userInfo = new StringBuilder("");
+        String userInfo="";
 
-        // Example: typed access (name)
-        // - no special permissions required
-        userInfo.append(String.format("Name: %s\n\n",
-                user.getName()));
+        try {
+            userObject.put("user_id",id);
+            userObject.put("fb_id",user.getId());
 
-        // Example: typed access (birthday)
-        // - requires user_birthday permission
-        userInfo.append(String.format("Birthday: %s\n\n",
-                user.getBirthday()));
+            userObject.put("username",user.getName());
 
-        // Example: partially typed access, to location field,
-        // name key (location)
-        // - requires user_location permission
-        userInfo.append(String.format("Location: %s\n\n",
-                user.getLocation().getProperty("name")));
+            userObject.put("location",user.getLocation().getProperty("name"));
+
+            String[] dob=user.getBirthday().split("/");
+            userObject.put("birthday",dob[2]+"-"+dob[0]+"-"+dob[1]);
+
+            userInfo=userObject.toString();
+
+            sendUserInfo(userObject);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         return userInfo.toString();
     }
 
+    /*
+    Communication with backend server
+     */
+    private void sendUserInfo(final JSONObject userObject){
+        new AsyncTask<Void,String,String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                msg = postUserInfo(userObject);
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.i(TAG, msg);
+                storeMoviesAtBackend();
+            }
+        }.execute(null, null, null);
+    }
+
+    private String postUserInfo(JSONObject userObject){
+        String msg="";
+        HttpClient httpClient = new DefaultHttpClient();
+        // replace with your url
+        HttpPost httpPost = new HttpPost(USER_API);
+        httpPost.setHeader("Authorization","Token "+authToken);
+
+        StringEntity se;
+        try {
+            se = new StringEntity(userObject.toString());
+            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,"application/json"));
+            httpPost.setEntity(se);
+
+            HttpResponse response = httpClient.execute(httpPost);
+            // write response to log
+            Log.d(TAG,"Post user info"+ response.getStatusLine().toString());
+            Log.d(TAG, EntityUtils.toString(response.getEntity()));
+        } catch (ClientProtocolException | UnsupportedEncodingException e) {
+            // Log exception
+            e.printStackTrace();
+        } catch (IOException e) {
+            // Log exception
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    private void sendTokenToBackend(final String token){
+        new AsyncTask<Void,String,String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                msg = postToken(token);
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.i(TAG, msg);
+            }
+        }.execute(null, null, null);
+    }
+
+    private String postToken(String token){
+        String msg="";
+        HttpClient httpClient = new DefaultHttpClient();
+        // replace with your url
+        HttpPost httpPost = new HttpPost(AUTH_API);
+        httpPost.setHeader("Authorization","Token "+token);
+
+        try {
+            HttpResponse response = httpClient.execute(httpPost);
+            // write response to log
+            Log.d(TAG,"Post token response: "+ response.getStatusLine().toString());
+            String responseBody=EntityUtils.toString(response.getEntity());
+            Log.d(TAG,responseBody );
+            if(response.getStatusLine().getStatusCode()==200){
+                JSONObject authResponse=new JSONObject(responseBody);
+                storeCredentials(authResponse);
+            }
+        } catch (ClientProtocolException | UnsupportedEncodingException e) {
+            // Log exception
+            e.printStackTrace();
+        } catch (IOException | JSONException e) {
+            // Log exception
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    private void storeMoviesAtBackend(){
+        new AsyncTask<Void,String,String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                msg = postAccessToken(MOVIES_API);
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.i(TAG, msg);
+            }
+        }.execute(null, null, null);
+    }
+
+    private String postAccessToken(String API){
+        String msg="";
+        HttpClient httpClient = new DefaultHttpClient();
+        // replace with your url
+        HttpPost httpPost = new HttpPost(API);
+        httpPost.setHeader("Authorization","Token "+authToken);
+
+        JSONObject jsonObject=new JSONObject();
+
+        StringEntity se;
+        try {
+            jsonObject.put("access_token",accessToken);
+
+            se = new StringEntity(jsonObject.toString());
+            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,"application/json"));
+            httpPost.setEntity(se);
+
+            HttpResponse response = httpClient.execute(httpPost);
+            // write response to log
+            Log.d(TAG,"Post AccessToken response: "+ response.getStatusLine().toString());
+            String responseBody=EntityUtils.toString(response.getEntity());
+            Log.d(TAG,responseBody );
+        } catch (ClientProtocolException | UnsupportedEncodingException e) {
+            // Log exception
+            e.printStackTrace();
+        } catch (IOException | JSONException e) {
+            // Log exception
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    private void storeCredentials(JSONObject authResponse) throws JSONException {
+        authToken=authResponse.getString("token");
+        id=authResponse.getLong("id");
+        username=authResponse.getString("name");
+        SharedPreferences appPreferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor=appPreferences.edit();
+        editor.putString("token",authToken);
+        editor.putLong("id", id);
+        editor.putString("name",username);
+        editor.putString("access_token",accessToken);
+        editor.commit();
+
+        Log.d(TAG,"Object sent: "+buildUserInfoDisplay(facebookUser));
+    }
+
+    private void getCredentials(){
+        SharedPreferences appPreferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
+        authToken=appPreferences.getString("token","");
+
+        if(!authToken.isEmpty())
+            Log.d(TAG,"Already registered to backend");
+    }
 }
