@@ -53,16 +53,14 @@ import java.util.Arrays;
 public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
-    private static final String URL="http://192.168.1.4:8000/";
-    private static final String USER_API=URL+"user-profiles/";
-    private static final String AUTH_API=URL+"api-auth/facebook/";
-    private static final String MOVIES_API=URL+"movies/";
+
 
     private static String authToken=""; //Django server token
     private static String accessToken=""; //Facebook token
     private static long id;
     private String username;
     private GraphUser facebookUser;
+    private int login_counter=0;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -146,7 +144,9 @@ public class MainFragment extends Fragment {
                     if (user != null) {
                         accessToken=session.getAccessToken();
                         Log.v(TAG,"Token: "+accessToken);
-                        sendTokenToBackend(accessToken);
+                        login_counter++;
+                        if(login_counter==1)
+                            sendTokenToBackend(accessToken);
                         facebookUser=user;
                         // Display the parsed user info
                         //Log.i(TAG,buildUserInfoDisplay(user));
@@ -356,7 +356,7 @@ public class MainFragment extends Fragment {
         String msg="";
         HttpClient httpClient = new DefaultHttpClient();
         // replace with your url
-        HttpPost httpPost = new HttpPost(USER_API);
+        HttpPost httpPost = new HttpPost(Common.USER_API);
         httpPost.setHeader("Authorization","Token "+authToken);
 
         StringEntity se;
@@ -367,8 +367,8 @@ public class MainFragment extends Fragment {
 
             HttpResponse response = httpClient.execute(httpPost);
             // write response to log
-            Log.d(TAG,"Post user info"+ response.getStatusLine().toString());
-            Log.d(TAG, EntityUtils.toString(response.getEntity()));
+//            Log.d(TAG,"Post user info"+ response.getStatusLine().toString());
+//            Log.d(TAG, EntityUtils.toString(response.getEntity()));
         } catch (ClientProtocolException | UnsupportedEncodingException e) {
             // Log exception
             e.printStackTrace();
@@ -399,15 +399,15 @@ public class MainFragment extends Fragment {
         String msg="";
         HttpClient httpClient = new DefaultHttpClient();
         // replace with your url
-        HttpPost httpPost = new HttpPost(AUTH_API);
+        HttpPost httpPost = new HttpPost(Common.AUTH_API);
         httpPost.setHeader("Authorization","Token "+token);
 
         try {
             HttpResponse response = httpClient.execute(httpPost);
             // write response to log
-            Log.d(TAG,"Post token response: "+ response.getStatusLine().toString());
+//            Log.d(TAG,"Post token response: "+ response.getStatusLine().toString());
             String responseBody=EntityUtils.toString(response.getEntity());
-            Log.d(TAG,responseBody );
+//            Log.d(TAG,responseBody );
             if(response.getStatusLine().getStatusCode()==200){
                 JSONObject authResponse=new JSONObject(responseBody);
                 storeCredentials(authResponse);
@@ -427,13 +427,14 @@ public class MainFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 String msg = "";
-                msg = postAccessToken(MOVIES_API);
+                msg = postAccessToken(Common.MOVIES_API);
                 return msg;
             }
 
             @Override
             protected void onPostExecute(String msg) {
                 Log.i(TAG, msg);
+                goToMainActivity();
             }
         }.execute(null, null, null);
     }
@@ -450,6 +451,7 @@ public class MainFragment extends Fragment {
         StringEntity se;
         try {
             jsonObject.put("access_token",accessToken);
+            jsonObject.put("fb_id",facebookUser.getId());
 
             se = new StringEntity(jsonObject.toString());
             se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,"application/json"));
@@ -478,8 +480,10 @@ public class MainFragment extends Fragment {
         SharedPreferences.Editor editor=appPreferences.edit();
         editor.putString("token",authToken);
         editor.putLong("id", id);
-        editor.putString("name",username);
+        editor.putString("username",username);
         editor.putString("access_token",accessToken);
+        editor.putString("name",facebookUser.getName());
+        editor.putString("user_id",facebookUser.getId());
         editor.commit();
 
         Log.d(TAG,"Object sent: "+buildUserInfoDisplay(facebookUser));
@@ -488,8 +492,14 @@ public class MainFragment extends Fragment {
     private void getCredentials(){
         SharedPreferences appPreferences= PreferenceManager.getDefaultSharedPreferences(getActivity());
         authToken=appPreferences.getString("token","");
+        id=appPreferences.getLong("id",0);
 
         if(!authToken.isEmpty())
-            Log.d(TAG,"Already registered to backend");
+            Log.d(TAG,"Already registered to backend, User id= "+id);
+    }
+
+    private void goToMainActivity(){
+        Intent intent = new Intent(getActivity(),MainActivity.class);
+        startActivity(intent);
     }
 }

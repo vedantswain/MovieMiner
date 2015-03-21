@@ -92,7 +92,13 @@ class UserProfileViewSet(APIView):
 
 
 class MovieViewSet(APIView):
+    def get(self, request, format=None):
+        print request.user
+        return Response(request.data, status=status.HTTP_200_OK)
+
+
     def post(self, request, format=None):
         access_token=request.data.get('access_token','')
-        fetch_movies(access_token);
-        return Response(request.data, status=status.HTTP_200_OK)
+        fb_id=request.data.get('fb_id','')
+        fetch_movies(access_token,fb_id);
+        return Response(request.data, status=status.HTTP_201_CREATED)
