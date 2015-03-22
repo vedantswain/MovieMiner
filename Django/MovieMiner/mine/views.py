@@ -74,26 +74,36 @@ class UserProfileViewSet(APIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
-    @csrf_exempt
-    def dispatch(self, *args, **kwargs):
-        return super(UserProfileViewSet, self).dispatch(*args, **kwargs)
-
     def get(self, request, format=None):
         serializer = UserProfileSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-    	print request.data
     	serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            userProfile = UserProfile.objects.get(fb_id=request.data.get('fb_id',''))
+            save_auth_user(userProfile,request.user)    
+            return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        else:
+            if(UserProfile.objects.filter(fb_id=request.data.get('fb_id','')).exists()):
+                userProfile = UserProfile.objects.get(fb_id=request.data.get('fb_id',''))
+                save_auth_user(userProfile,request.user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def save_auth_user(userProfile,authUser):
+    if userProfile.auth_user is None:
+        userProfile.auth_user=authUser
+        userProfile.save()
+        print userProfile.auth_user
+
 
 
 class MovieViewSet(APIView):
     def get(self, request, format=None):
-        print request.user
+        user=request.user
         return Response(request.data, status=status.HTTP_200_OK)
 
 

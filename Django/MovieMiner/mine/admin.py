@@ -2,7 +2,7 @@ from django.contrib import admin
 from mine.models import UserProfile,Movie,MovieLikes
 
 class UserProfileAdmin(admin.ModelAdmin):
-	list_display=('fb_id','username','location','birthday')
+	list_display=('fb_id','username','location','birthday','auth_user')
 
 class MovieAdmin(admin.ModelAdmin):
 	list_display=('fb_id','imdb_id','title','genre','director','actors','image_uri')

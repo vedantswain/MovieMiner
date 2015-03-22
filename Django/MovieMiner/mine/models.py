@@ -24,6 +24,7 @@ class UserProfile(models.Model):
     fb_id = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=200)
     birthday = models.DateField(blank=False)
+    auth_user=models.ForeignKey(User,null=True)
 
     class Meta:
         db_table = u'user_profile'
