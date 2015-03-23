@@ -1,1 +1,1 @@
-curl -X GET --header "Authorization: Token 2493f5421ea3dc9e8e8d150e7e57b9f0c788ccae" --data "type=me" http://192.168.1.4:8000/movies/ > error.html
+curl -X GET --header "Authorization: Token 2493f5421ea3dc9e8e8d150e7e57b9f0c788ccae" --data "type=me&page=2" http://192.168.48.103:8000/movies/ > error.html

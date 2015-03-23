@@ -105,7 +105,8 @@ class MovieViewSet(APIView):
     def get(self, request, format=None):
         user=request.user
         user_profile=UserProfile.objects.get(auth_user=user)
-        get_movies(user_profile)
+        # print request.data.get('page','1')
+        get_movies(user_profile,request.data.get('page','1'))
         return Response(request.data, status=status.HTTP_200_OK)
 
 

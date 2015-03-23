@@ -58,11 +58,13 @@ def fetch_movies(access_token,fb_id):
 				movieLike=MovieLikes(user=user,movie=movieEntry)
 				movieLike.save()
 
-def get_movies(user_profile):
+def get_movies(user_profile,page_number):
 	movie_list=[]
 	json_list=[]
-	dict_json_response={}
+	dict_json={}
 	page_size=20
+	next_page_number=-1
+
 	q=MovieLikes.objects.filter(user=user_profile)
 	for movie_like in q:
 		if(Movie.objects.filter(id=movie_like.movie_id).exists()):
@@ -73,14 +75,18 @@ def get_movies(user_profile):
 			MovieLikes.objects.filter(movie_id=movie_like.movie_id).delete()
 
 	pgntr=Paginator(movie_list,page_size)
-	page=pgntr.page(1)
+	page=pgntr.page(page_number)
 	# print page.object_list
+
+	if(page.has_next()):
+		next_page_number=page.next_page_number()
 
 	page_movie_list=page.object_list
 	page_movie_list_json = serializers.serialize('json', page_movie_list)
 
-	page_movie_list_json = json.dumps([{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
+	page_movie_list_json = json.dumps({"movies":[{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
 		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
-		for o in page_movie_list])
+		for o in page_movie_list],
+		"next_page_number":next_page_number})
 
-	print page_movie_list_json 
+	print page_movie_list_json
