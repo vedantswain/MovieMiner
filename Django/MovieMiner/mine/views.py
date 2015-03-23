@@ -15,7 +15,7 @@ from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
 from mine.models import UserProfile
-from mine.graph_functions import fetch_movies
+from mine.movie_functions import fetch_movies,get_movies
 
 from social.apps.django_app.utils import psa
 
@@ -104,6 +104,8 @@ def save_auth_user(userProfile,authUser):
 class MovieViewSet(APIView):
     def get(self, request, format=None):
         user=request.user
+        user_profile=UserProfile.objects.get(auth_user=user)
+        get_movies(user_profile)
         return Response(request.data, status=status.HTTP_200_OK)
 
 

@@ -1,6 +1,11 @@
 import  omdb,json,traceback
 from open_facebook import OpenFacebook
 from mine.models import UserProfile,Movie,MovieLikes
+from mine.serializers import MovieSerializer
+from django.http import HttpResponse
+from django.core.paginator import Paginator
+from django.core import serializers
+from rest_framework.renderers import JSONRenderer
 
 def fetch_movies(access_token,fb_id):
 	limit=500
@@ -52,3 +57,30 @@ def fetch_movies(access_token,fb_id):
 			if(not (MovieLikes.objects.filter(user=user,movie=movieEntry).exists())):
 				movieLike=MovieLikes(user=user,movie=movieEntry)
 				movieLike.save()
+
+def get_movies(user_profile):
+	movie_list=[]
+	json_list=[]
+	dict_json_response={}
+	page_size=20
+	q=MovieLikes.objects.filter(user=user_profile)
+	for movie_like in q:
+		if(Movie.objects.filter(id=movie_like.movie_id).exists()):
+			movie=Movie.objects.get(id=movie_like.movie_id)
+			movie_list.append(movie)
+			# print movie.title
+		else:
+			MovieLikes.objects.filter(movie_id=movie_like.movie_id).delete()
+
+	pgntr=Paginator(movie_list,page_size)
+	page=pgntr.page(1)
+	# print page.object_list
+
+	page_movie_list=page.object_list
+	page_movie_list_json = serializers.serialize('json', page_movie_list)
+
+	page_movie_list_json = json.dumps([{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
+		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
+		for o in page_movie_list])
+
+	print page_movie_list_json 
