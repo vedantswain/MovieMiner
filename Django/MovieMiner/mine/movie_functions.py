@@ -2,7 +2,7 @@ import  omdb,json,traceback
 from open_facebook import OpenFacebook
 from mine.models import UserProfile,Movie,MovieLikes
 from mine.serializers import MovieSerializer
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseNotFound
 from django.core.paginator import Paginator
 from django.core import serializers
 from rest_framework.renderers import JSONRenderer
@@ -75,18 +75,25 @@ def get_movies(user_profile,page_number):
 			MovieLikes.objects.filter(movie_id=movie_like.movie_id).delete()
 
 	pgntr=Paginator(movie_list,page_size)
-	page=pgntr.page(page_number)
-	# print page.object_list
 
-	if(page.has_next()):
-		next_page_number=page.next_page_number()
+	page_number=int(page_number)
+	if(page_number<1):
+		return HttpResponseNotFound('Page not found')
+	elif(page_number>pgntr.num_pages):
+		return HttpResponseNotFound('Page not found')
+	else:
+		page=pgntr.page(page_number)
+		# print page.object_list
 
-	page_movie_list=page.object_list
-	page_movie_list_json = serializers.serialize('json', page_movie_list)
+		if(page.has_next()):
+			next_page_number=page.next_page_number()
 
-	page_movie_list_json = json.dumps({"movies":[{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
-		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
-		for o in page_movie_list],
-		"next_page_number":next_page_number})
+		page_movie_list=page.object_list
+		page_movie_list_json = serializers.serialize('json', page_movie_list)
 
-	print page_movie_list_json
+		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
+			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
+			for o in page_movie_list],
+			"next_page_number":next_page_number})
+
+		return HttpResponse(page_movie_list_json,content_type='application/json')
