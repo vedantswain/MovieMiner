@@ -32,11 +32,12 @@ public class GetMoviesTask extends AsyncTask<Void,Void,String> {
     private String authToken;
     OnGetMoviesTaskCompleted listener;
 
-    public GetMoviesTask(Context context,String authToken,String type,int pageNo){
+    public GetMoviesTask(Context context,String authToken,String type,int pageNo,OnGetMoviesTaskCompleted listener){
         this.context=context;
         this.authToken=authToken;
         this.type=type;
         this.pageNo=pageNo;
+        this.listener=listener;
     }
 
     @Override

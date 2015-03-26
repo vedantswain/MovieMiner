@@ -4,16 +4,23 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.GetMoviesTask;
+import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnGetMoviesTaskCompleted;
+import in.ac.iiitd.vedantdasswain.movieminer.UIClasses.MovieAdapter;
 
 
 public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCompleted{
@@ -22,12 +29,26 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
     private static long id;
     private static final String TAG="MainActivity";
     private String TYPE="type";
+    RecyclerView movieRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    ArrayList<MovieObject> movieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupRecyclerView();
+
         getCredentials();
+    }
+
+    private void setupRecyclerView() {
+        movieRecyclerView=(RecyclerView)findViewById(R.id.movie_recycler_view);
+        movieRecyclerView.setHasFixedSize(true);
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        movieRecyclerView.setLayoutManager(mLayoutManager);
     }
 
 
@@ -65,7 +86,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
     }
 
     private void fetchMovies(String type,int pageNo) {
-        (new GetMoviesTask(this,authToken,type,pageNo)).execute();
+        (new GetMoviesTask(this,authToken,type,pageNo,this)).execute();
     }
 
 
@@ -74,8 +95,30 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
         try {
             JSONObject jsonResponse = new JSONObject(msg);
             Log.v(TAG,jsonResponse.toString());
+            JSONArray movieJSONArray = jsonResponse.getJSONArray("movies");
+            parseJSONArray(movieJSONArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void parseJSONArray(JSONArray movieJSONArray){
+        int i=0;
+        while(i<movieJSONArray.length()){
+            try {
+                JSONObject movieJSON=movieJSONArray.getJSONObject(i);
+                MovieObject movieObject=new MovieObject(movieJSON.getString("fb_id"),
+                        movieJSON.getString("imdb_id"),movieJSON.getString("title"),
+                        movieJSON.getString("director"),movieJSON.getString("actors"),
+                        movieJSON.getString("genre"),movieJSON.getString("image_uri"));
+                movieList.add(movieObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+
+        mAdapter = new MovieAdapter(this,movieList);
+        movieRecyclerView.setAdapter(mAdapter);
     }
 }
