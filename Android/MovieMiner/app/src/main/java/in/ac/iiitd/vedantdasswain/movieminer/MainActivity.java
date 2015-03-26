@@ -1,7 +1,6 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -10,24 +9,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.GetMoviesTask;
+import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnGetMoviesTaskCompleted;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCompleted{
     private static String authToken=""; //Django server token
     private static String accessToken=""; //Facebook token
     private static long id;
     private static final String TAG="MainActivity";
-    private String TYPE="me";
+    private String TYPE="type";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,51 +61,21 @@ public class MainActivity extends ActionBarActivity {
 
     public void onGet(View view){
         Log.v(TAG,"Sending GET request");
-        fetchMovies();
+        fetchMovies("me",0);
     }
 
-    private void fetchMovies() {
-        new AsyncTask<Void, String, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-//                Log.v(TAG,"Doing in background");
-                msg = getMovies(TYPE);
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-                Log.i(TAG, msg);
-            }
-        }.execute();
+    private void fetchMovies(String type,int pageNo) {
+        (new GetMoviesTask(this,authToken,type,pageNo)).execute();
     }
 
-    private String getMovies(String type){
-        String msg="";
-        HttpClient httpClient = new DefaultHttpClient();
 
-//        Log.v(TAG,"Get movies");
-
-        HttpGet httpGet = new HttpGet(Common.MOVIES_API);
-        httpGet.setHeader("Authorization","Token "+authToken);
-
-        HttpParams params=httpGet.getParams();
-        params.setParameter("type",TYPE);
-        httpGet.setParams(params);
-
+    @Override
+    public void OnTaskCompleted(String msg) {
         try {
-            HttpResponse response = httpClient.execute(httpGet);
-            // write response to log
-            Log.d(TAG,"Get movies: "+ response.getStatusLine().toString());
-            Log.d(TAG, EntityUtils.toString(response.getEntity()));
-        } catch (ClientProtocolException | UnsupportedEncodingException e) {
-            // Log exception
-            e.printStackTrace();
-        } catch (IOException e) {
-            // Log exception
+            JSONObject jsonResponse = new JSONObject(msg);
+            Log.v(TAG,jsonResponse.toString());
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        return msg;
     }
 }
