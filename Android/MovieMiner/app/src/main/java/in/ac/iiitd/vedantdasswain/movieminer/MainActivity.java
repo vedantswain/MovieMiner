@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupRecyclerView();
-
+        movieList=new ArrayList<MovieObject>();
         getCredentials();
     }
 
@@ -118,7 +118,9 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
             i++;
         }
 
-        mAdapter = new MovieAdapter(this,movieList);
-        movieRecyclerView.setAdapter(mAdapter);
+        if(movieList!=null){
+            mAdapter = new MovieAdapter(this,movieList);
+            movieRecyclerView.setAdapter(mAdapter);
+        }
     }
 }

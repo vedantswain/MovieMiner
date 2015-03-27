@@ -150,6 +150,7 @@ public class MainFragment extends Fragment {
                         facebookUser=user;
                         // Display the parsed user info
                         //Log.i(TAG,buildUserInfoDisplay(user));
+//                        goToMainActivity();
                     }
                 }
             }).executeAsync();

@@ -91,7 +91,7 @@ def get_movies(user_profile,page_number):
 		page_movie_list=page.object_list
 		page_movie_list_json = serializers.serialize('json', page_movie_list)
 
-		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'imdb_id':o.imdb_id,'title':o.title,
+		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
 			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
 			for o in page_movie_list],
 			"next_page_number":next_page_number})
