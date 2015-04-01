@@ -3,10 +3,10 @@
 
     <string name="app_name">Movie Miner</string>
     <string name="app_id">1648330488728020</string>
-    <string name="title_activity_sign_in">SignInActivity</string>
+    <string name="title_activity_sign_in">@string/app_name</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Home</string>
 
 </resources>
