@@ -75,6 +75,7 @@ class UserProfileViewSet(APIView):
     serializer_class = UserProfileSerializer
 
     def get(self, request, format=None):
+        # print request.GET
         serializer = UserProfileSerializer(self.queryset, many=True)
         return Response(serializer.data)
 
@@ -102,15 +103,15 @@ def save_auth_user(userProfile,authUser):
 
 
 class MovieViewSet(APIView):
-    def get(self, request, format=None):
+    def get(self, request, type):
+        # print type
         user=request.user
         user_profile=UserProfile.objects.get(auth_user=user)
-        # print request.data.get('page','1')
-        response=get_movies(user_profile,request.data.get('page','1'))
+        response=get_movies(user_profile,request.GET.get('page','1'))
         return response
 
 
-    def post(self, request, format=None):
+    def post(self, request, type):
         access_token=request.data.get('access_token','')
         fb_id=request.data.get('fb_id','')
         fetch_movies(access_token,fb_id);

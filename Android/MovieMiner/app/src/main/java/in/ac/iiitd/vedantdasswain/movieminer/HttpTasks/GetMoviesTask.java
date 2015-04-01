@@ -5,15 +5,19 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
+import java.util.List;
 
 import in.ac.iiitd.vedantdasswain.movieminer.Common;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnGetMoviesTaskCompleted;
@@ -24,7 +28,7 @@ import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnGetMovie
 public class GetMoviesTask extends AsyncTask<Void,Void,String> {
 
     private static final String TAG ="GetMoviesTask" ;
-    private static final String TYPE ="type" ;
+//    private static final String TYPE ="type" ;
     private static final String PAGE ="page" ;
     Context context;
     String type;
@@ -44,7 +48,7 @@ public class GetMoviesTask extends AsyncTask<Void,Void,String> {
     protected String doInBackground(Void... params) {
         String msg = "";
 //                Log.v(TAG,"Doing in background");
-        msg = getMovies(TYPE,pageNo);
+        msg = getMovies(type,pageNo);
         return msg;
     }
 
@@ -60,13 +64,22 @@ public class GetMoviesTask extends AsyncTask<Void,Void,String> {
 
 //        Log.v(TAG,"Get movies");
 
-        HttpGet httpGet = new HttpGet(Common.MOVIES_API);
+        String url=Common.MOVIES_API+type+"/";
+
+        if(!url.endsWith("?"))
+            url += "?";
+
+        List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+        params.add(new BasicNameValuePair(PAGE, Integer.toString(pageNo)));
+
+        String paramString = URLEncodedUtils.format(params, "utf-8");
+
+        url += paramString;
+
+        HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization","Token "+authToken);
 
-        HttpParams params=httpGet.getParams();
-        params.setParameter(TYPE,type);
-        params.setParameter(PAGE,pageNo);
-        httpGet.setParams(params);
 
         try {
             HttpResponse response = httpClient.execute(httpGet);

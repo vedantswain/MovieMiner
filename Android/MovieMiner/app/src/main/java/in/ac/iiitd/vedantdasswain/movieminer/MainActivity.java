@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,8 +32,10 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
     private String TYPE="type";
     RecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     ArrayList<MovieObject> movieList;
+    private int currPage=0;
+    private int nextPage=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
         setupRecyclerView();
         movieList=new ArrayList<MovieObject>();
         getCredentials();
+        fetchMovies("me",nextPage);
     }
 
     private void setupRecyclerView() {
@@ -49,6 +53,32 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         movieRecyclerView.setLayoutManager(mLayoutManager);
+
+        movieRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            int visibleItemCount,totalItemCount,pastVisiblesItems;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+
+//                Log.v(TAG,"They see me scrollin...");
+
+                if ( (visibleItemCount+pastVisiblesItems) >= totalItemCount) {
+//                    Log.v(TAG, "They hatin...");
+                    //To check redundant calls at end of list
+                    if(nextPage==-1)
+                        Toast.makeText(MainActivity.this,"That\'s all we got for you",Toast.LENGTH_SHORT).show();
+                    if(currPage!=nextPage) {
+                        currPage=nextPage;
+                        fetchMovies("me", nextPage);
+                    }
+                }
+
+            }
+        });
     }
 
 
@@ -82,7 +112,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
 
     public void onGet(View view){
         Log.v(TAG,"Sending GET request");
-        fetchMovies("me",0);
+//        fetchMovies("me",0);
     }
 
     private void fetchMovies(String type,int pageNo) {
@@ -94,8 +124,9 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
     public void OnTaskCompleted(String msg) {
         try {
             JSONObject jsonResponse = new JSONObject(msg);
-            Log.v(TAG,jsonResponse.toString());
+//            Log.v(TAG,jsonResponse.toString());
             JSONArray movieJSONArray = jsonResponse.getJSONArray("movies");
+            nextPage=jsonResponse.getInt("next_page_number");
             parseJSONArray(movieJSONArray);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -118,9 +149,12 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
             i++;
         }
 
-        if(movieList!=null){
+        if(movieList!=null && currPage==0){
             mAdapter = new MovieAdapter(this,movieList);
             movieRecyclerView.setAdapter(mAdapter);
+        }
+        else{
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

@@ -1,6 +1,7 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -61,6 +62,7 @@ public class MainFragment extends Fragment {
     private String username;
     private GraphUser facebookUser;
     private int login_counter=0;
+    ProgressDialog pd;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -114,6 +116,7 @@ public class MainFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        pd=new ProgressDialog(getActivity());
         getCredentials();
 
         uiHelper = new UiLifecycleHelper(getActivity(), callback);
@@ -145,8 +148,10 @@ public class MainFragment extends Fragment {
                         accessToken=session.getAccessToken();
                         Log.v(TAG,"Token: "+accessToken);
                         login_counter++;
-                        if(login_counter==1)
+                        if(login_counter==1) {
+//                            pd=ProgressDialog.show(getActivity(),"Wait","Logging in...");
                             sendTokenToBackend(accessToken);
+                        }
                         facebookUser=user;
                         // Display the parsed user info
                         //Log.i(TAG,buildUserInfoDisplay(user));
@@ -338,6 +343,7 @@ public class MainFragment extends Fragment {
      */
     private void sendUserInfo(final JSONObject userObject){
         new AsyncTask<Void,String,String>() {
+
             @Override
             protected String doInBackground(Void... params) {
                 String msg = "";
@@ -348,6 +354,8 @@ public class MainFragment extends Fragment {
             @Override
             protected void onPostExecute(String msg) {
                 Log.i(TAG, msg);
+                pd.dismiss();
+//                pd=ProgressDialog.show(getActivity(),"Wait","Syncing movie likes...");
                 storeMoviesAtBackend();
             }
         }.execute(null, null, null);
@@ -368,7 +376,8 @@ public class MainFragment extends Fragment {
 
             HttpResponse response = httpClient.execute(httpPost);
             // write response to log
-//            Log.d(TAG,"Post user info"+ response.getStatusLine().toString());
+//            Log.d(TAG,"Post user info"+ response.getStatusLine().toString())
+                return "Post user info"+ response.getStatusLine().toString();
 //            Log.d(TAG, EntityUtils.toString(response.getEntity()));
         } catch (ClientProtocolException | UnsupportedEncodingException e) {
             // Log exception
@@ -383,6 +392,11 @@ public class MainFragment extends Fragment {
     private void sendTokenToBackend(final String token){
         new AsyncTask<Void,String,String>() {
             @Override
+            protected void onPreExecute(){
+                pd=ProgressDialog.show(getActivity(),"Wait","Getting access...");
+            }
+
+            @Override
             protected String doInBackground(Void... params) {
                 String msg = "";
                 msg = postToken(token);
@@ -392,6 +406,7 @@ public class MainFragment extends Fragment {
             @Override
             protected void onPostExecute(String msg) {
                 Log.i(TAG, msg);
+                pd.dismiss();
             }
         }.execute(null, null, null);
     }
@@ -425,16 +440,25 @@ public class MainFragment extends Fragment {
 
     private void storeMoviesAtBackend(){
         new AsyncTask<Void,String,String>() {
+            public static final String TYPE = "me/";
+
+            @Override
+            protected void onPreExecute(){
+                pd=ProgressDialog.show(getActivity(),"Wait","Syncing movie likes...");
+            }
+
             @Override
             protected String doInBackground(Void... params) {
                 String msg = "";
-                msg = postAccessToken(Common.MOVIES_API);
+                msg = postAccessToken(Common.MOVIES_API+TYPE);
                 return msg;
             }
 
             @Override
             protected void onPostExecute(String msg) {
                 Log.i(TAG, msg);
+                pd.dismiss();
+                pd.cancel();
                 goToMainActivity();
             }
         }.execute(null, null, null);
