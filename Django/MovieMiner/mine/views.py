@@ -39,7 +39,7 @@ class ObtainAuthToken(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             # Here we call PSA to authenticate like we would if we used PSA on server side.
-            print 'calling PSA'
+            # print 'calling PSA'
             user = register_by_access_token(request, backend)
             # If user is active we get or create the REST token and send it back with user data
             if user and user.is_active:
@@ -98,7 +98,7 @@ def save_auth_user(userProfile,authUser):
     if userProfile.auth_user is None:
         userProfile.auth_user=authUser
         userProfile.save()
-        print userProfile.auth_user
+        # print userProfile.auth_user
 
 
 

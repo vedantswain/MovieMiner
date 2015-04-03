@@ -1,5 +1,6 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -36,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
     ArrayList<MovieObject> movieList;
     private int currPage=0;
     private int nextPage=1;
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,10 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
         setupRecyclerView();
         movieList=new ArrayList<MovieObject>();
         getCredentials();
+        pd=new ProgressDialog(this);
+//        pd=ProgressDialog.show(this,"Loading","Fetching your movies...");
         fetchMovies("me",nextPage);
+
     }
 
     private void setupRecyclerView() {
@@ -69,10 +74,14 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
                 if ( (visibleItemCount+pastVisiblesItems) >= totalItemCount) {
 //                    Log.v(TAG, "They hatin...");
                     //To check redundant calls at end of list
-                    if(nextPage==-1)
-                        Toast.makeText(MainActivity.this,"That\'s all we got for you",Toast.LENGTH_SHORT).show();
+                    if(nextPage==-1) {
+                        Toast.makeText(MainActivity.this, "That\'s all we got for you", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                        pd.cancel();
+                    }
                     if(currPage!=nextPage) {
                         currPage=nextPage;
+                        pd=ProgressDialog.show(MainActivity.this,"Loading","You\'ve seen some more movies...");
                         fetchMovies("me", nextPage);
                     }
                 }
@@ -128,6 +137,7 @@ public class MainActivity extends ActionBarActivity implements OnGetMoviesTaskCo
             JSONArray movieJSONArray = jsonResponse.getJSONArray("movies");
             nextPage=jsonResponse.getInt("next_page_number");
             parseJSONArray(movieJSONArray);
+            pd.dismiss();
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -89,10 +89,13 @@ elif os.getenv('SETTINGS_MODE') == 'prod':
     # in production.
     DATABASES = {
         'default': {
-            'ENGINE': 'google.appengine.ext.django.backends.rdbms',
-            'INSTANCE': 'movie-miner:sql-26194',
+            # 'ENGINE': 'google.appengine.ext.django.backends.rdbms',
+            # 'INSTANCE': 'movie-miner:sql-26194',
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '173.194.245.124',
             'NAME': 'movie_miner_database',
-            'USER': 'root'
+            'USER': 'chiefminer',
+            'PASSWORD': 'inSequel',
         }
     }
 else:
@@ -142,6 +145,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
+
+DIRNAME = os.path.dirname(__file__)
+
+STATIC_ROOT = os.path.join(DIRNAME,'..','static')
 
 STATIC_URL = '/static/'
 

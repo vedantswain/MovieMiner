@@ -38,7 +38,7 @@ def fetch_movies(access_token,fb_id):
 						movieEntry.save()
 						movieEntry=Movie.objects.get(fb_id=movie.get('id'))
 
-						print "Saved film: " +content_dict.get('Title')
+						# print "Saved film: " +content_dict.get('Title')
 
 						# save relationship
 						if(not (MovieLikes.objects.filter(user=user,movie=movieEntry).exists())):
