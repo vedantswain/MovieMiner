@@ -1,0 +1,5 @@
+*.pyc
+*.pyo
+lib
+error.html
+new_req.txt

@@ -62,16 +62,52 @@ WSGI_APPLICATION = 'MovieMiner.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'movie_miner_db',
-        'USER': 'chiefminer',
-        'PASSWORD': 'inSequel',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '',
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'movie_miner_db',
+#         'USER': 'chiefminer',
+#         'PASSWORD': 'inSequel',
+#         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+#         'PORT': '',
+#     }
+    
+# }
+
+if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
+    # Running on production App Engine, so use a Google Cloud SQL database.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/movie-miner:sql-26194',
+            'NAME': 'movie_miner_database',
+            'USER': 'root',
+        }
     }
-}
+elif os.getenv('SETTINGS_MODE') == 'prod':
+    # Running in development, but want to access the Google Cloud SQL instance
+    # in production.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'google.appengine.ext.django.backends.rdbms',
+            'INSTANCE': 'movie-miner:sql-26194',
+            'NAME': 'movie_miner_database',
+            'USER': 'root'
+        }
+    }
+else:
+    # Running in development, so use a local MySQL database.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'movie_miner_db',
+            'USER': 'chiefminer',
+            'PASSWORD': 'inSequel',
+            'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+            'PORT': '',
+        }
+    }
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
