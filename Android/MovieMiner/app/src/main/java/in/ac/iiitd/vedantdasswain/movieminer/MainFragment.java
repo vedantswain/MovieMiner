@@ -405,7 +405,7 @@ public class MainFragment extends Fragment {
 
             @Override
             protected void onPostExecute(String msg) {
-                Log.i(TAG, msg);
+                Log.i(TAG,"token to backend: "+ msg);
                 pd.dismiss();
             }
         }.execute(null, null, null);
@@ -421,9 +421,9 @@ public class MainFragment extends Fragment {
         try {
             HttpResponse response = httpClient.execute(httpPost);
             // write response to log
-//            Log.d(TAG,"Post token response: "+ response.getStatusLine().toString());
+            Log.d(TAG,"Post token response: "+ response.getStatusLine().toString());
             String responseBody=EntityUtils.toString(response.getEntity());
-//            Log.d(TAG,responseBody );
+            Log.d(TAG,responseBody );
             if(response.getStatusLine().getStatusCode()==200){
                 JSONObject authResponse=new JSONObject(responseBody);
                 storeCredentials(authResponse);

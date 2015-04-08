@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^$', views.index, name='index'),
+    url(r'^privacy_policy/', views.privacy_policy, name='privacy_policy'),
     url(r'^admin/', include(admin.site.urls)),
     #url(r'^', include(router.urls)),
     url(r'^api-auth/(?P<backend>[^/]+)/$', views.ObtainAuthToken.as_view()),

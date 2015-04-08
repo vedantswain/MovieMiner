@@ -1,7 +1,9 @@
 import pdb
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.template import RequestContext, loader
+
 
 from rest_framework import status,viewsets
 from rest_framework.views import APIView
@@ -19,6 +21,15 @@ from mine.movie_functions import fetch_movies,get_movies
 
 from social.apps.django_app.utils import psa
 
+def index(request):
+    context = RequestContext(request)
+    template = loader.get_template('mine/home.html')
+    return HttpResponse(template.render(context))
+
+def privacy_policy(request):
+    context = RequestContext(request)
+    template = loader.get_template('mine/privacy_policy.html')
+    return HttpResponse(template.render(context))
 
 class ObtainAuthToken(APIView):
     throttle_classes = ()

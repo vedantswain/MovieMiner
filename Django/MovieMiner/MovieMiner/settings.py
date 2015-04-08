@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '7rod$)$0g2di=2m8u85xdj&($nab_626b=1vb%ly5dmi)*0+r='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
@@ -54,6 +54,22 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 ROOT_URLCONF = 'MovieMiner.urls'
 
 WSGI_APPLICATION = 'MovieMiner.wsgi.application'
@@ -79,7 +95,7 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '/cloudsql/movie-miner:sql-26194',
+            'HOST': '/cloudsql/facebook-movies-908:sql-26194',
             'NAME': 'movie_miner_database',
             'USER': 'root',
         }
@@ -92,7 +108,7 @@ elif os.getenv('SETTINGS_MODE') == 'prod':
             # 'ENGINE': 'google.appengine.ext.django.backends.rdbms',
             # 'INSTANCE': 'movie-miner:sql-26194',
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '173.194.245.124',
+            'HOST': '173.194.242.143',
             'NAME': 'movie_miner_database',
             'USER': 'chiefminer',
             'PASSWORD': 'inSequel',
