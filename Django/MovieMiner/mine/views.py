@@ -114,15 +114,15 @@ def save_auth_user(userProfile,authUser):
 
 
 class MovieViewSet(APIView):
-    def get(self, request, type):
-        # print type
+    def get(self, request, kind):
+        # print kind
         user=request.user
         user_profile=UserProfile.objects.get(auth_user=user)
-        response=get_movies(user_profile,request.GET.get('page','1'))
+        response=get_movies(user_profile,request.GET.get('page','1'),kind)
         return response
 
 
-    def post(self, request, type):
+    def post(self, request, kind):
         access_token=request.data.get('access_token','')
         fb_id=request.data.get('fb_id','')
         fetch_movies(access_token,fb_id);

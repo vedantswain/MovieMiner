@@ -20,6 +20,6 @@ urlpatterns = patterns('',
     url(r'^api-auth/(?P<backend>[^/]+)/$', views.ObtainAuthToken.as_view()),
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^user-profiles/$', views.UserProfileViewSet.as_view()),
-    url(r'^movies/(?P<type>[^/]+)/$', views.MovieViewSet.as_view()),
+    url(r'^movies/(?P<kind>[^/]+)/$', views.MovieViewSet.as_view()),
 )
 

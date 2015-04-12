@@ -35,6 +35,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.ac.iiitd.vedantdasswain.movieminer.SignInActivity" />
         </activity>
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/title_activity_home"
+            android:parentActivityName=".SignInActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.ac.iiitd.vedantdasswain.movieminer.SignInActivity" />
+        </activity>
     </application>
 
 </manifest>

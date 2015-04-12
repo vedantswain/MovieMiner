@@ -5,6 +5,7 @@ from mine.serializers import MovieSerializer
 from django.http import HttpResponse,HttpResponseNotFound
 from django.core.paginator import Paginator
 from django.core import serializers
+from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
 
 def fetch_movies(access_token,fb_id):
@@ -58,7 +59,7 @@ def fetch_movies(access_token,fb_id):
 				movieLike=MovieLikes(user=user,movie=movieEntry)
 				movieLike.save()
 
-def get_movies(user_profile,page_number):
+def get_movies(user_profile,page_number,kind):
 	movie_list=[]
 	json_list=[]
 	dict_json={}
@@ -66,6 +67,14 @@ def get_movies(user_profile,page_number):
 	next_page_number=-1
 
 	q=MovieLikes.objects.filter(user=user_profile)
+	r=MovieLikes.objects.filter(~Q(user=user_profile))
+
+	if kind=="other":
+		for user_like in q:
+			r=r.exclude(movie=user_like.movie_id)
+
+		q=r
+
 	for movie_like in q:
 		if(Movie.objects.filter(id=movie_like.movie_id).exists()):
 			movie=Movie.objects.get(id=movie_like.movie_id)
