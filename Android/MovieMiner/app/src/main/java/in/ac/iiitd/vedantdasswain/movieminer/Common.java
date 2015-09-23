@@ -11,4 +11,5 @@ public class Common {
     public static final String AUTH_API= SERVER_URL +"api-auth/facebook/";
     public static final String MOVIES_API= SERVER_URL +"movies/";
     public static final String BROWSE_API= SERVER_URL +"browse/";
+    public static final String SEARCH_API= SERVER_URL +"search/";
 }

@@ -1,16 +1,16 @@
 package in.ac.iiitd.vedantdasswain.movieminer.BrowsingActivities;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.GenreObject;
 import in.ac.iiitd.vedantdasswain.movieminer.R;
@@ -25,6 +25,12 @@ public class BrowseHomeActivity extends ActionBarActivity {
     String[] genres = new String[] {"Action","Adventure","Animation","Biography","Comedy","Crime","Documentary","Drama",
     "Family","Fantasy","Film-Noir","History","Horror","Music","Musical","Mystery","Romance","Sci-Fi","Sport","Thriller",
     "War","Western"};
+    int[] icons = new int[]{R.mipmap.ic_genre_action,R.mipmap.ic_genre_adventure,R.mipmap.ic_genre_animated,
+    R.mipmap.ic_genre_bipoic,R.mipmap.ic_genre_comedy,R.mipmap.ic_genre_crime,R.mipmap.ic_genre_documentary,
+    R.mipmap.ic_genre_drama,R.mipmap.ic_genre_family,R.mipmap.ic_genre_fantasy,R.mipmap.ic_genre_noir,
+    R.mipmap.ic_genre_history,R.mipmap.ic_genre_horror,R.mipmap.ic_genre_music,R.mipmap.ic_genre_musical,
+    R.mipmap.ic_genre_mystery,R.mipmap.ic_genre_romance,R.mipmap.ic_genre_scifi,R.mipmap.ic_genre_sports,
+    R.mipmap.ic_genre_thriller,R.mipmap.ic_genre_war,R.mipmap.ic_genre_western};
     RecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -47,7 +53,17 @@ public class BrowseHomeActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_browse, menu);
+        getMenuInflater().inflate(R.menu.menu_browse_home, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false);
+
         return true;
     }
 
@@ -67,9 +83,8 @@ public class BrowseHomeActivity extends ActionBarActivity {
     }
 
     private void setupGenres(){
-        List<String> genreNames = Arrays.asList(genres);
-        for (String gn:genreNames){
-            GenreObject newGenre=new GenreObject(gn,R.mipmap.ic_launcher);
+        for (int i=0;i<genres.length;i++){
+            GenreObject newGenre=new GenreObject(genres[i],icons[i]);
             genreList.add(newGenre);
         }
     }

@@ -179,7 +179,7 @@ def get_movie_page_id(search_res,access_token):
 def search_by_title(query,access_token):
 	movie_list=[]
 	result = Movie.objects.filter(title__icontains=query)
-	# print result
+	print query
 
 	for movie in result:
 		movie_list.append(movie)
@@ -190,7 +190,7 @@ def search_by_title(query,access_token):
 		res = omdb.request(t=query,fullplot=True,tomatoes=True,type="movie")
 		content=res.content
 		content=unicode(content,"utf-8")
-		# print content
+		print content
 		
 		try:
 			content_dict=json.loads(content)
