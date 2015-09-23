@@ -8,7 +8,17 @@ class MovieAdmin(admin.ModelAdmin):
 	list_display=('fb_id','imdb_id','title','genre','director','actors','image_uri')
 
 class MovieLikesAdmin(admin.ModelAdmin):
-	list_display=('user','movie')	
+	list_display=('get_user','get_movie')
+
+	def get_user(self, obj):
+		return '%s'%(obj.user.fb_id)
+	get_user.short_description = 'User'
+	get_user.admin_order_field = 'fb_id'
+
+	def get_movie(self, obj):
+		return '%s'%(obj.movie.title)
+	get_user.short_description = 'Movie'
+	get_user.admin_order_field = 'title'
 
 # Register your models here.
 admin.site.register(UserProfile,UserProfileAdmin)

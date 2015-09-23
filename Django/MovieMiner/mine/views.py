@@ -1,4 +1,4 @@
-import pdb
+import pdb,omdb
 
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -17,7 +17,7 @@ from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
 from mine.models import UserProfile
-from mine.movie_functions import fetch_movies,get_movies
+from mine.movie_functions import fetch_movies,get_movies,store_top250
 
 from social.apps.django_app.utils import psa
 
@@ -30,6 +30,15 @@ def privacy_policy(request):
     context = RequestContext(request)
     template = loader.get_template('mine/privacy_policy.html')
     return HttpResponse(template.render(context))
+
+def saveIMDBTop(request):
+    # print "inside"
+    store_top250()
+    return HttpResponse(status=201)
+
+# def testing(request):
+#     resp=omdb.request(t="Gone Girl",fullplot=True,tomatoes=True,type="movie")
+#     return HttpResponse(resp)
 
 class ObtainAuthToken(APIView):
     throttle_classes = ()

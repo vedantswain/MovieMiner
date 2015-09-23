@@ -46,6 +46,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        actionBar.setHomeButtonEnabled(false);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -96,8 +98,16 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         if (id == R.id.action_settings) {
             return true;
         }
+        else if(id == R.id.action_browse){
+            openBrowse();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void openBrowse(){
+//        Intent intent=new Intent()
     }
 
     @Override

@@ -191,11 +191,6 @@ public class RecommendedFragment extends Fragment implements OnGetMoviesTaskComp
         id = appPreferences.getLong("id", 0);
     }
 
-    public void onGet(View view){
-        Log.v(TAG, "Sending GET request");
-//        fetchMovies("me",0);
-    }
-
     private void fetchMovies(String type,int pageNo) {
         (new GetMoviesTask(getActivity(),authToken,type,pageNo,this)).execute();
     }
@@ -238,6 +233,11 @@ public class RecommendedFragment extends Fragment implements OnGetMoviesTaskComp
         else{
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void onGet(View view){
+        Log.v(TAG, "Sending GET request");
+//        fetchMovies("me",0);
     }
 
 }

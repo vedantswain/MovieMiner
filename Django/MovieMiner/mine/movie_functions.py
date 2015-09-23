@@ -1,4 +1,5 @@
 import  omdb,json,traceback
+import csv,os
 from open_facebook import OpenFacebook
 from mine.models import UserProfile,Movie,MovieLikes
 from mine.serializers import MovieSerializer
@@ -7,6 +8,46 @@ from django.core.paginator import Paginator
 from django.core import serializers
 from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
+
+
+def store_top250():
+	# print "top250"
+	filename1="imdb_top_fbid.csv"
+	filepath=os.path.join(os.path.dirname(os.path.realpath(__file__)), filename1)
+	cr = csv.reader(open(filepath,"rb"))
+	# print "opened"
+	movie_dict={}
+	for row in cr:
+		movie_dict[row[0]]=str(row[1])
+	# print "read"
+	for movie in movie_dict.keys():
+		fb_id=movie_dict[movie]
+
+		if(not (Movie.objects.filter(fb_id=fb_id).exists())):
+			# print movie.get('name')+" doesn't exist"
+			res = omdb.request(t=movie,fullplot=True,tomatoes=True,type="movie")
+			content=res.content
+			content=unicode(content,"utf-8")
+			# print content			
+			try:
+				content_dict=json.loads(content)
+				if(content_dict.get('Response')=="True"):
+					# save entry in movie model
+					movieEntry=Movie(fb_id=fb_id,imdb_id=content_dict.get('imdbID'),title=content_dict.get('Title'),actors=content_dict.get('Actors'),director=content_dict.get('Director'),genre=content_dict.get('Genre'),image_uri=content_dict.get('Poster'))
+					if(not (Movie.objects.filter(imdb_id=content_dict.get('imdbID')).exists())):
+						movieEntry.save()
+						movieEntry=Movie.objects.get(fb_id=fb_id)
+
+						print "Saved film: " +content_dict.get('Title')
+
+					else:
+						movieExists=Movie.objects.get(imdb_id=content_dict.get('imdbID'))
+						print movieExists.title+" saved id: "+str(movieExists.fb_id)+" actual id: "+fb_id
+
+			except Exception as e:
+				traceback.print_exc()
+		else:
+			print movie+" exists"
 
 def fetch_movies(access_token,fb_id):
 	limit=500
