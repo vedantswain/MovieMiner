@@ -1,5 +1,5 @@
 import  omdb,json,traceback
-import csv,os
+import csv,os,random
 from open_facebook import OpenFacebook
 from mine.models import UserProfile,Movie,MovieLikes
 from mine.serializers import MovieSerializer
@@ -100,13 +100,38 @@ def fetch_movies(access_token,fb_id):
 				movieLike=MovieLikes(user=user,movie=movieEntry)
 				movieLike.save()
 
+def page_resp_movies(page_number,movie_list):
+	next_page_number=-1
+	page_size=20
+	pgntr=Paginator(movie_list,page_size)
+
+	page_number=int(page_number)
+	if(page_number<1):
+		return HttpResponseNotFound('Page not found')
+	elif(page_number>pgntr.num_pages):
+		return HttpResponseNotFound('Page not found')
+	else:
+		page=pgntr.page(page_number)
+		# print page.object_list
+
+		if(page.has_next()):
+			next_page_number=page.next_page_number()
+
+		page_movie_list=page.object_list
+		random.shuffle(page_movie_list)
+		page_movie_list_json = serializers.serialize('json', page_movie_list)
+
+		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
+			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
+			for o in page_movie_list],
+			"next_page_number":next_page_number})
+
+		return HttpResponse(page_movie_list_json,content_type='application/json')
+
 def get_movies(user_profile,page_number,kind):
 	movie_list=[]
 	json_list=[]
-	dict_json={}
-	page_size=20
-	next_page_number=-1
-
+	
 	q=MovieLikes.objects.filter(user=user_profile)
 	r=MovieLikes.objects.filter(~Q(user=user_profile))
 
@@ -124,26 +149,20 @@ def get_movies(user_profile,page_number,kind):
 		else:
 			MovieLikes.objects.filter(movie_id=movie_like.movie_id).delete()
 
-	pgntr=Paginator(movie_list,page_size)
+	return page_resp_movies(page_number,movie_list)
 
-	page_number=int(page_number)
-	if(page_number<1):
-		return HttpResponseNotFound('Page not found')
-	elif(page_number>pgntr.num_pages):
-		return HttpResponseNotFound('Page not found')
-	else:
-		page=pgntr.page(page_number)
-		# print page.object_list
+def browse_by_genre(genre,page_number):
+	movie_list=[]
+	json_list=[]
+	
+	# print genre
 
-		if(page.has_next()):
-			next_page_number=page.next_page_number()
+	result = Movie.objects.filter(genre__contains=genre)
+	# print result
 
-		page_movie_list=page.object_list
-		page_movie_list_json = serializers.serialize('json', page_movie_list)
-
-		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
-			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
-			for o in page_movie_list],
-			"next_page_number":next_page_number})
-
-		return HttpResponse(page_movie_list_json,content_type='application/json')
+	for movie in result:
+		movie_list.append(movie)
+	# 		# print movie.title
+	
+	# print movie_list
+	return page_resp_movies(page_number,movie_list)

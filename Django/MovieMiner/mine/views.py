@@ -2,6 +2,7 @@ import pdb,omdb
 
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from django.template import RequestContext, loader
 
 
@@ -17,24 +18,32 @@ from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
 from mine.models import UserProfile
-from mine.movie_functions import fetch_movies,get_movies,store_top250
+from mine.movie_functions import fetch_movies,get_movies,store_top250,browse_by_genre
 
 from social.apps.django_app.utils import psa
 
+@require_GET
 def index(request):
     context = RequestContext(request)
     template = loader.get_template('mine/home.html')
     return HttpResponse(template.render(context))
 
+@require_GET
 def privacy_policy(request):
     context = RequestContext(request)
     template = loader.get_template('mine/privacy_policy.html')
     return HttpResponse(template.render(context))
 
+@require_GET
 def saveIMDBTop(request):
     # print "inside"
     store_top250()
     return HttpResponse(status=201)
+
+@require_GET
+def browse_movies(request,genre):
+    response=browse_by_genre(genre,request.GET.get('page','1'))
+    return response
 
 # def testing(request):
 #     resp=omdb.request(t="Gone Girl",fullplot=True,tomatoes=True,type="movie")
