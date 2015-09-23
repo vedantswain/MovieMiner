@@ -18,7 +18,7 @@ from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
 from mine.models import UserProfile
-from mine.movie_functions import fetch_movies,get_movies,store_top250,browse_by_genre
+from mine.movie_functions import fetch_movies,get_movies,store_top250,browse_by_genre,search_by_title
 
 from social.apps.django_app.utils import psa
 
@@ -43,6 +43,17 @@ def saveIMDBTop(request):
 @require_GET
 def browse_movies(request,genre):
     response=browse_by_genre(genre,request.GET.get('page','1'))
+    return response
+
+
+@require_GET
+def search_movies(request):
+    q=request.GET.get('q','')
+    query=q.encode('utf8')
+    access_token=request.GET.get('access_token','')
+    if query=='':
+        return HttpResponse(status=200)
+    response=search_by_title(query,access_token)
     return response
 
 # def testing(request):
