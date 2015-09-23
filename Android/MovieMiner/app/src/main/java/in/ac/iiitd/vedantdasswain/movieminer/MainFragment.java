@@ -526,5 +526,6 @@ public class MainFragment extends Fragment {
     private void goToMainActivity(){
         Intent intent = new Intent(getActivity(),HomeActivity.class);
         startActivity(intent);
+        getActivity().finish();
     }
 }

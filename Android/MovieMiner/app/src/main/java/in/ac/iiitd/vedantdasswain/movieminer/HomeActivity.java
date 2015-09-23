@@ -1,5 +1,6 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 
 import java.util.Locale;
 
+import in.ac.iiitd.vedantdasswain.movieminer.BrowsingActivities.BrowseHomeActivity;
 import in.ac.iiitd.vedantdasswain.movieminer.HomeTabs.MyMoviesFragment;
 import in.ac.iiitd.vedantdasswain.movieminer.HomeTabs.RecommendedFragment;
 
@@ -41,12 +43,11 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -106,8 +107,13 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     public void openBrowse(){
-//        Intent intent=new Intent()
+        Intent intent=new Intent(this,BrowseHomeActivity.class);
+        startActivity(intent);
     }
 
     @Override

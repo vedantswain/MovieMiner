@@ -16,5 +16,6 @@
     <string name="title_section2">Recommended</string>
     <string name="title_section3">Section 3</string>
     <string name="title_activity_browse">BrowseActivity</string>
+    <string name="title_activity_browse_home">Browse Movies</string>
 
 </resources>

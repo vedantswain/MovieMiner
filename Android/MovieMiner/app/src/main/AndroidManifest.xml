@@ -44,8 +44,16 @@
                 android:value="in.ac.iiitd.vedantdasswain.movieminer.SignInActivity" />
         </activity>
         <activity
-            android:name=".BrowseActivity"
+            android:name=".BrowsingActivities.BrowseActivity"
             android:label="@string/title_activity_browse"
+            android:parentActivityName=".BrowsingActivities.BrowseHomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BrowsingActivities.BrowseHomeActivity" />
+        </activity>
+        <activity
+            android:name=".BrowsingActivities.BrowseHomeActivity"
+            android:label="@string/title_activity_browse_home"
             android:parentActivityName=".HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
