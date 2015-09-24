@@ -2,7 +2,7 @@ import pdb,omdb
 
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET,require_POST
 from django.template import RequestContext, loader
 
 
@@ -17,8 +17,8 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from rest_framework.renderers import JSONRenderer
 
 from mine.serializers import UserProfileSerializer
-from mine.models import UserProfile
-from mine.movie_functions import fetch_movies,get_movies,store_top250,browse_by_genre,search_by_title
+from mine.models import UserProfile,Movie
+from mine.movie_functions import fetch_movies,get_movies,store_top250,browse_by_genre,search_by_title,movie_relation_handler
 
 from social.apps.django_app.utils import psa
 
@@ -44,7 +44,6 @@ def saveIMDBTop(request):
 def browse_movies(request,genre):
     response=browse_by_genre(genre,request.GET.get('page','1'))
     return response
-
 
 @require_GET
 def search_movies(request):
@@ -141,11 +140,11 @@ def save_auth_user(userProfile,authUser):
         # print userProfile.auth_user
 
 
-
 class MovieViewSet(APIView):
     def get(self, request, kind):
         # print kind
         user=request.user
+        print user
         user_profile=UserProfile.objects.get(auth_user=user)
         response=get_movies(user_profile,request.GET.get('page','1'),kind)
         return response
@@ -156,3 +155,13 @@ class MovieViewSet(APIView):
         fb_id=request.data.get('fb_id','')
         fetch_movies(access_token,fb_id);
         return Response(request.data, status=status.HTTP_201_CREATED)
+
+class MovieLikeViewSet(APIView):
+    def post(self, request, action):
+        user=request.user
+        print user
+        user_profile=UserProfile.objects.get(auth_user=user)
+        movie_id=request.data.get('movie_id','')
+        print movie_id
+        movie=Movie.objects.get(fb_id=movie_id)
+        return movie_relation_handler(user_profile,movie,action)

@@ -25,5 +25,6 @@ urlpatterns = patterns('',
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^user-profiles/$', views.UserProfileViewSet.as_view()),
     url(r'^movies/(?P<kind>[^/]+)/$', views.MovieViewSet.as_view()),
+    url(r'^movie-likes/(?P<action>[^/]+)/$', views.MovieLikeViewSet.as_view()),
 )
 

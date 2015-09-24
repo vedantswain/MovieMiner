@@ -35,3 +35,10 @@ class MovieLikes(models.Model):
 
 	class Meta:
 		db_table = u'movie_likes'
+
+class MovieDislikes(models.Model):
+	user=models.ForeignKey(UserProfile)
+	movie=models.ForeignKey(Movie)
+
+	class Meta:
+		db_table = u'movie_dislikes'

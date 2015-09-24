@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
 lib
-error.html
+output.html
+curltest.txt
 new_req.txt

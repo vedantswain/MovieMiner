@@ -1,7 +1,7 @@
 import  omdb,json,traceback
 import csv,os,random,urllib,urllib2
 from open_facebook import OpenFacebook
-from mine.models import UserProfile,Movie,MovieLikes
+from mine.models import UserProfile,Movie,MovieLikes,MovieDislikes
 from mine.serializers import MovieSerializer
 from django.http import HttpResponse,HttpResponseNotFound
 from django.core.paginator import Paginator
@@ -22,7 +22,6 @@ def store_movie(content_dict,fb_id):
 		else:
 			movieExists=Movie.objects.get(imdb_id=content_dict.get('imdbID'))
 			print movieExists.title+" saved id: "+str(movieExists.fb_id)+" actual id: "+movie.get('id')
-
 
 def store_top250():
 	# print "top250"
@@ -229,3 +228,44 @@ def search_by_title(query,access_token):
 		for o in movie_list]})
 
 	return HttpResponse(movie_list_json,content_type='application/json')
+
+def movie_relation_handler(user_profile,movie,action):
+	if action=='like':
+		like_movie(user_profile,movie)
+		undislike_movie(user_profile,movie)
+		return HttpResponse(status=201)
+	elif action=='unlike':
+		unlike_movie(user_profile,movie)
+		return HttpResponse(status=200)
+	elif action=='dislike':
+		dislike_movie(user_profile,movie)
+		unlike_movie(user_profile,movie)
+		return HttpResponse(status=201)
+	elif action=='undislike':
+		undislike_movie(user_profile,movie)
+		return HttpResponse(status=200)
+	else:
+		return HttpResponse(status=405)
+
+def like_movie(user,movie):
+	movieLike=MovieLikes(user=user,movie=movie)
+	movieLike.save()
+
+def unlike_movie(user,movie):
+	try:
+		movieLikes=MovieLikes.objects.filter(user=user,movie=movie)
+		movieLikes.delete()
+	except MovieLikes.DoesNotExist:
+		print "Like relationship doesn't exist"
+
+def dislike_movie(user,movie):
+	movieDislike=MovieDislikes(user=user,movie=movie)
+	movieDislike.save()
+
+def undislike_movie(user,movie):
+	try:
+		movieDisikes=MovieDislikes.objects.get(user=user,movie=movie)
+		movieDisikes.delete()
+	except MovieDislikes.DoesNotExist:
+		print "Dislike relationship doesn't exist"
+
