@@ -29,6 +29,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public TextView directorTextView;
         public TextView genreTextView;
         public ImageView posterImageView;
+        public ImageView upvoteImageView;
+        public ImageView downvoteImageView;
 //        String imageUri;
 
         public ViewHolder(View v) {
@@ -38,6 +40,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             directorTextView=(TextView)v.findViewById(R.id.directorTextView);
             genreTextView=(TextView)v.findViewById(R.id.genreTextView);
             posterImageView=(ImageView)v.findViewById(R.id.posterImageView);
+            upvoteImageView=(ImageView)v.findViewById(R.id.upvoteImageView);
+            downvoteImageView=(ImageView)v.findViewById(R.id.downvoteImageView);
         }
     }
 
@@ -65,6 +69,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         viewHolder.actorTextView.setText(movieObjects.get(i).getActors());
         viewHolder.directorTextView.setText(movieObjects.get(i).getDirector());
         viewHolder.genreTextView.setText(movieObjects.get(i).getGenre());
+
+        if(movieObjects.get(i).getRel().equals("like")){
+            viewHolder.upvoteImageView.setImageResource(R.mipmap.ic_upvoted);
+        }
+
+        if(movieObjects.get(i).getRel().equals("dislike")){
+            viewHolder.downvoteImageView.setImageResource(R.mipmap.ic_downvoted);
+        }
+
         Glide.with(context)
                 .load(movieObjects.get(i).getImageUri())
                 .into(viewHolder.posterImageView);

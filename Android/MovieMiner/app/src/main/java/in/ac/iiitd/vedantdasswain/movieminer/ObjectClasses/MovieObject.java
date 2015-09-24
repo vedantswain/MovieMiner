@@ -4,10 +4,10 @@ package in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses;
  * Created by vedantdasswain on 26/03/15.
  */
 public class MovieObject {
-    String fb_id,imdb_id,title,director,actors,genre,imageUri;
+    String fb_id,imdb_id,title,director,actors,genre,imageUri,rel;
 
     public MovieObject(String fb_id, String imdb_id, String title,
-                    String director, String actors,String genre, String imageUri){
+                    String director, String actors,String genre, String imageUri,String rel){
         this.fb_id=fb_id;
         this.imdb_id=imdb_id;
         this.title=title;
@@ -15,7 +15,12 @@ public class MovieObject {
         this.actors=actors;
         this.genre=genre;
         this.imageUri=imageUri;
+        this.rel=rel;
     }
+
+    public String getRel(){return this.rel;}
+
+    public void putRel(String rel){this.rel=rel;}
 
     public String getFb_id(){
         return this.fb_id;

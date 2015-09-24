@@ -217,7 +217,8 @@ public class RecommendedFragment extends Fragment implements OnGetMoviesTaskComp
                 MovieObject movieObject=new MovieObject(movieJSON.getString("fb_id"),
                         movieJSON.getString("imdb_id"),movieJSON.getString("title"),
                         movieJSON.getString("director"),movieJSON.getString("actors"),
-                        movieJSON.getString("genre"),movieJSON.getString("image_uri"));
+                        movieJSON.getString("genre"),movieJSON.getString("image_uri"),
+                        movieJSON.getString("rel"));
                 movieList.add(movieObject);
             } catch (JSONException e) {
                 e.printStackTrace();
