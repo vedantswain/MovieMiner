@@ -101,7 +101,7 @@ def fetch_movies(access_token,fb_id):
 				movieLike=MovieLikes(user=user,movie=movieEntry)
 				movieLike.save()
 
-def page_resp_movies(page_number,movie_list):
+def page_resp_movies(page_number,movie_list,user):
 	next_page_number=-1
 	page_size=20
 	pgntr=Paginator(movie_list,page_size)
@@ -122,10 +122,22 @@ def page_resp_movies(page_number,movie_list):
 		random.shuffle(page_movie_list)
 		page_movie_list_json = serializers.serialize('json', page_movie_list)
 
-		page_movie_list_json = json.dumps({"movies":[{'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
-			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
-			for o in page_movie_list],
-			"next_page_number":next_page_number})
+		data=[]
+		for o in page_movie_list:
+			movie_data={'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
+			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri}
+			
+			if MovieLikes.objects.filter(user=user,movie=o).exists():
+				movie_data['rel']='like'
+			elif MovieDislikes.objects.filter(user=user,movie=o).exists():
+				movie_data['rel']='dislike'
+			else:
+				movie_data['rel']='none'
+
+			data.append(movie_data)
+
+
+		page_movie_list_json = json.dumps({"movies":data,"next_page_number":next_page_number})
 
 		return HttpResponse(page_movie_list_json,content_type='application/json')
 
@@ -149,7 +161,7 @@ def get_movies(user_profile,page_number,kind):
 		else:
 			MovieLikes.objects.filter(movie_id=movie_like.movie_id).delete()
 
-	return page_resp_movies(page_number,movie_list)
+	return page_resp_movies(page_number,movie_list,user_profile)
 
 def browse_by_genre(genre,page_number):
 	movie_list=[]
@@ -162,7 +174,7 @@ def browse_by_genre(genre,page_number):
 	# 		# print movie.title
 	
 	# print movie_list
-	return page_resp_movies(page_number,movie_list)
+	return page_resp_movies(page_number,movie_list,user_profile)
 
 def get_movie_page_id(search_res,access_token):
 	for item in search_res:
