@@ -13,12 +13,12 @@ class MovieLikesAdmin(admin.ModelAdmin):
 	def get_user(self, obj):
 		return '%s'%(obj.user.username)
 	get_user.short_description = 'User'
-	get_user.admin_order_field = 'username'
+	get_user.admin_order_field = 'user'
 
 	def get_movie(self, obj):
 		return '%s'%(obj.movie.title)
 	get_movie.short_description = 'Movie'
-	get_movie.admin_order_field = 'title'
+	get_movie.admin_order_field = 'movie'
 
 class MovieDislikesAdmin(admin.ModelAdmin):
 	list_display=('get_user','get_movie')
@@ -26,12 +26,12 @@ class MovieDislikesAdmin(admin.ModelAdmin):
 	def get_user(self, obj):
 		return '%s'%(obj.user.username)
 	get_user.short_description = 'User'
-	get_user.admin_order_field = 'username'
+	get_user.admin_order_field = 'user'
 
 	def get_movie(self, obj):
 		return '%s'%(obj.movie.title)
 	get_movie.short_description = 'Movie'
-	get_movie.admin_order_field = 'title'
+	get_movie.admin_order_field = 'movie'
 
 # Register your models here.
 admin.site.register(UserProfile,UserProfileAdmin)

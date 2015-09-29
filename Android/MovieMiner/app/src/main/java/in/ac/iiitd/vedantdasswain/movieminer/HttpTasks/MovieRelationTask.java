@@ -3,6 +3,8 @@ package in.ac.iiitd.vedantdasswain.movieminer.HttpTasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -28,22 +30,26 @@ import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnMovieRel
  */
 public class MovieRelationTask extends AsyncTask<Void,Void,String> {
 
-    private static final String TAG ="BrowseMoviesTask" ;
+    private static final String TAG ="MovieRelationTask" ;
     //    private static final String TYPE ="relation" ;
     private static final String PAGE ="page" ;
     Context context;
     String relation;
     String fb_id;
     MovieObject mo;
+    View icon;
+    ImageView sibling;
     private String authToken;
     OnMovieRelationTaskCompleted listener;
 
-    public MovieRelationTask(Context context,String authToken,String relation,MovieObject mo,OnMovieRelationTaskCompleted listener){
+    public MovieRelationTask(Context context,String authToken,String relation,MovieObject mo,View icon,ImageView sibling,OnMovieRelationTaskCompleted listener){
         this.context=context;
         this.authToken=authToken;
         this.relation=relation;
         this.mo=mo;
         this.fb_id=mo.getFb_id();
+        this.icon=icon;
+        this.sibling=sibling;
         this.listener=listener;
     }
 
@@ -58,7 +64,7 @@ public class MovieRelationTask extends AsyncTask<Void,Void,String> {
     @Override
     protected void onPostExecute(String msg) {
         Log.i(TAG, msg);
-        listener.OnTaskCompleted(msg,mo);
+        listener.OnTaskCompleted(msg,mo,icon,sibling,relation);
     }
 
     private String postMovieRel(String relation,String fb_id){
@@ -87,6 +93,7 @@ public class MovieRelationTask extends AsyncTask<Void,Void,String> {
             Log.d(TAG,"Post AccessToken response: "+ response.getStatusLine().toString());
             String responseBody=EntityUtils.toString(response.getEntity());
             Log.d(TAG,responseBody );
+            return response.getStatusLine().toString();
         } catch (ClientProtocolException | UnsupportedEncodingException e) {
             // Log exception
             e.printStackTrace();

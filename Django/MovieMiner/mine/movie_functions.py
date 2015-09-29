@@ -128,9 +128,9 @@ def page_resp_movies(page_number,movie_list,user):
 			'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri}
 			
 			if MovieLikes.objects.filter(user=user,movie=o).exists():
-				movie_data['rel']='like'
+				movie_data['rel']='liked'
 			elif MovieDislikes.objects.filter(user=user,movie=o).exists():
-				movie_data['rel']='dislike'
+				movie_data['rel']='disliked'
 			else:
 				movie_data['rel']='none'
 
@@ -242,9 +242,9 @@ def search_by_title(user,query,access_token):
 		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri}
 		# print "almost"
 		if MovieLikes.objects.filter(user=user,movie=o).exists():
-			movie_data['rel']='like'
+			movie_data['rel']='liked'
 		elif MovieDislikes.objects.filter(user=user,movie=o).exists():
-			movie_data['rel']='dislike'
+			movie_data['rel']='disliked'
 		else:
 			movie_data['rel']='none'
 
@@ -276,22 +276,26 @@ def movie_relation_handler(user_profile,movie,action):
 def like_movie(user,movie):
 	movieLike=MovieLikes(user=user,movie=movie)
 	movieLike.save()
+	print "Liked movie"
 
 def unlike_movie(user,movie):
 	try:
-		movieLikes=MovieLikes.objects.filter(user=user,movie=movie)
+		movieLikes=MovieLikes.objects.get(user=user,movie=movie)
 		movieLikes.delete()
+		print "Unliked movie"
 	except MovieLikes.DoesNotExist:
 		print "Like relationship doesn't exist"
 
 def dislike_movie(user,movie):
 	movieDislike=MovieDislikes(user=user,movie=movie)
 	movieDislike.save()
+	print "Disliked movie"
 
 def undislike_movie(user,movie):
 	try:
 		movieDisikes=MovieDislikes.objects.get(user=user,movie=movie)
 		movieDisikes.delete()
+		print "Undisliked movie"
 	except MovieDislikes.DoesNotExist:
 		print "Dislike relationship doesn't exist"
 

@@ -29,14 +29,41 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     static final String TAG="MovieAdapter";
     String authToken;
 
+    final int upvote=R.mipmap.ic_upvote;
+    final int upvoted=R.mipmap.ic_upvoted;
+    final int downvote=R.mipmap.ic_downvote;
+    final int downvoted=R.mipmap.ic_downvoted;
+
     private void getCredentials() {
         SharedPreferences appPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         authToken = appPreferences.getString("token", "");
     }
 
     @Override
-    public void OnTaskCompleted(String msg, MovieObject mo) {
+    public void OnTaskCompleted(String msg, MovieObject mo,View icon,ImageView sibling,String rel) {
         Log.v(TAG,msg);
+        if(!msg.contains("200 OK") && !msg.contains("201 CREATED") ){
+            if(rel.equals("like")){
+                ((ImageView) icon).setImageResource(upvote);
+            }
+            else if(rel.equals("dislike")){
+                ((ImageView) icon).setImageResource(downvote);
+            }
+            else if(rel.equals("unlike")){
+                ((ImageView) icon).setImageResource(upvoted);
+            }
+            else if(rel.equals("undislike")){
+                ((ImageView) icon).setImageResource(downvoted);
+            }
+        }
+        else{
+            if(rel.equals("like")){
+                sibling.setImageResource(downvote);
+            }
+            else if(rel.equals("dislike")){
+                sibling.setImageResource(upvote);
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -69,17 +96,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public void onClick(View v) {
             if(v instanceof ImageView){
                 if(v==upvoteImageView){
-                    mListener.onUpvote(v,(MovieObject)v.getTag());
+                    mListener.onUpvote(v,(MovieObject)v.getTag(R.string.movie_object_id),(ImageView)v.getTag(R.string.sibling_id));
                 }
                 else if(v==downvoteImageView){
-                    mListener.onDownvote(v,(MovieObject)v.getTag());
+                    mListener.onDownvote(v,(MovieObject)v.getTag(R.string.movie_object_id),(ImageView)v.getTag(R.string.sibling_id));
                 }
             }
         }
 
         public static interface viewHolderClicks {
-            public void onUpvote(View icon,MovieObject mo);
-            public void onDownvote(View icon,MovieObject mo);
+            public void onUpvote(View icon,MovieObject mo,ImageView sibling);
+            public void onDownvote(View icon,MovieObject mo,ImageView sibling);
         }
     }
 
@@ -100,36 +127,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         ViewHolder vh = new ViewHolder(v, new ViewHolder.viewHolderClicks() {
             @Override
-            public void onUpvote(View icon,MovieObject mo) {
-                int upvote=R.mipmap.ic_upvote;
-                int upvoted=R.mipmap.ic_upvoted;
+            public void onUpvote(View icon,MovieObject mo,ImageView sibling) {
+                ImageView icon_button=(ImageView)icon;
                 Log.v(TAG,"clicking upvote "+mo.getRel());
-                if(mo.getRel().equals("none")){
-                    postRelTask("like",mo);
+                if(mo.getRel().equals("none") || mo.getRel().equals("disliked")){
+                    icon_button.setImageResource(upvoted);
+                    mo.setRel("liked");
+                    postRelTask("like", mo, icon, sibling);
                 }
-                else if(mo.getRel().equals("like")){
-                    postRelTask("unlike",mo);
+                else if(mo.getRel().equals("liked")){
+                    icon_button.setImageResource(upvote);
+                    mo.setRel("none");
+                    postRelTask("unlike", mo, icon, sibling);
                 }
             }
 
             @Override
-            public void onDownvote(View icon,MovieObject mo) {
-                int downvote=R.mipmap.ic_downvote;
-                int downvoted=R.mipmap.ic_downvoted;
+            public void onDownvote(View icon,MovieObject mo,ImageView sibling) {
+                ImageView icon_button=(ImageView)icon;
                 Log.v(TAG,"clicking downvote "+mo.getRel());
-                if(mo.getRel().equals("none")){
-                    postRelTask("dislike",mo);
+                if(mo.getRel().equals("none") || mo.getRel().equals("liked")){
+                    icon_button.setImageResource(downvoted);
+                    mo.setRel("disliked");
+                    postRelTask("dislike",mo,icon, sibling);
                 }
-                else if(mo.getRel().equals("like")){
-                    postRelTask("undislike",mo);
+                else if(mo.getRel().equals("disliked")){
+                    icon_button.setImageResource(downvote);
+                    mo.setRel("none");
+                    postRelTask("undislike",mo,icon, sibling);
                 }
             }
         });
         return vh;
     }
 
-    public void postRelTask(String rel,MovieObject mo){
-        (new MovieRelationTask(context,authToken,rel,mo,this)).execute();
+    public void postRelTask(String rel,MovieObject mo,View icon,ImageView sibling){
+        (new MovieRelationTask(context,authToken,rel,mo,icon,sibling,this)).execute();
     }
 
 
@@ -140,15 +173,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         viewHolder.directorTextView.setText(movieObjects.get(i).getDirector());
         viewHolder.genreTextView.setText(movieObjects.get(i).getGenre());
 
-        if(movieObjects.get(i).getRel().equals("like")){
+        if(movieObjects.get(i).getRel().equals("liked")){
             viewHolder.upvoteImageView.setImageResource(R.mipmap.ic_upvoted);
         }
-        viewHolder.upvoteImageView.setTag(movieObjects.get(i));
+        viewHolder.upvoteImageView.setTag(R.string.movie_object_id,movieObjects.get(i));
+        viewHolder.upvoteImageView.setTag(R.string.sibling_id,viewHolder.downvoteImageView);
 
-        if(movieObjects.get(i).getRel().equals("dislike")){
+        if(movieObjects.get(i).getRel().equals("disliked")){
             viewHolder.downvoteImageView.setImageResource(R.mipmap.ic_downvoted);
         }
-        viewHolder.downvoteImageView.setTag(movieObjects.get(i));
+        viewHolder.downvoteImageView.setTag(R.string.movie_object_id,movieObjects.get(i));
+        viewHolder.downvoteImageView.setTag(R.string.sibling_id,viewHolder.upvoteImageView);
 
         Glide.with(context)
                 .load(movieObjects.get(i).getImageUri())

@@ -18,5 +18,7 @@
     <string name="title_activity_browse_home">Browse Movies</string>
     <string name="search_hint">Search Movies</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="movie_object_id">260194</string>
+    <string name="sibling_id">200591</string>
 
 </resources>

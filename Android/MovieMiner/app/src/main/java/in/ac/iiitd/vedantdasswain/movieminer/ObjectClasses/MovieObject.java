@@ -20,7 +20,7 @@ public class MovieObject {
 
     public String getRel(){return this.rel;}
 
-    public void putRel(String rel){this.rel=rel;}
+    public void setRel(String rel){this.rel=rel;}
 
     public String getFb_id(){
         return this.fb_id;
