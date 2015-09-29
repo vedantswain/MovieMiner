@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import in.ac.iiitd.vedantdasswain.movieminer.Common;
+import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnMovieRelationTaskCompleted;
 
 /**
@@ -33,14 +34,16 @@ public class MovieRelationTask extends AsyncTask<Void,Void,String> {
     Context context;
     String relation;
     String fb_id;
+    MovieObject mo;
     private String authToken;
     OnMovieRelationTaskCompleted listener;
 
-    public MovieRelationTask(Context context,String authToken,String relation,String fb_id,OnMovieRelationTaskCompleted listener){
+    public MovieRelationTask(Context context,String authToken,String relation,MovieObject mo,OnMovieRelationTaskCompleted listener){
         this.context=context;
         this.authToken=authToken;
         this.relation=relation;
-        this.fb_id=fb_id;
+        this.mo=mo;
+        this.fb_id=mo.getFb_id();
         this.listener=listener;
     }
 
@@ -55,7 +58,7 @@ public class MovieRelationTask extends AsyncTask<Void,Void,String> {
     @Override
     protected void onPostExecute(String msg) {
         Log.i(TAG, msg);
-        listener.OnTaskCompleted(msg);
+        listener.OnTaskCompleted(msg,mo);
     }
 
     private String postMovieRel(String relation,String fb_id){

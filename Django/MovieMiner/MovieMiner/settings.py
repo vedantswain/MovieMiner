@@ -108,7 +108,7 @@ elif os.getenv('SETTINGS_MODE') == 'prod':
             # 'ENGINE': 'google.appengine.ext.django.backends.rdbms',
             # 'INSTANCE': 'movie-miner:sql-26194',
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '173.194.231.94',
+            'HOST': '173.194.238.229',
             'NAME': 'movie_miner_database',
             'USER': 'chiefminer',
             'PASSWORD': 'inSequel',

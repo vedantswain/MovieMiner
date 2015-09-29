@@ -163,7 +163,7 @@ def get_movies(user_profile,page_number,kind):
 
 	return page_resp_movies(page_number,movie_list,user_profile)
 
-def browse_by_genre(genre,page_number):
+def browse_by_genre(user_profile,genre,page_number):
 	movie_list=[]
 	
 	result = Movie.objects.filter(genre__icontains=genre)
@@ -187,7 +187,7 @@ def get_movie_page_id(search_res,access_token):
 			return resp_dict['id']
 	return 0
 
-def search_by_title(query,access_token):
+def search_by_title(user,query,access_token):
 	movie_list=[]
 	result = Movie.objects.filter(title__icontains=query)
 	print query
@@ -235,9 +235,23 @@ def search_by_title(query,access_token):
 			traceback.print_exc()
 			return HttpResponse(status=500)
 	
-	movie_list_json = json.dumps({"movies":[{'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
-		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri} 
-		for o in movie_list]})
+	# print "before data"
+	data=[]
+	for o in movie_list:
+		movie_data={'title': o.title,'fb_id':o.fb_id,'imdb_id':o.imdb_id,'title':o.title,
+		'genre':o.genre,'director':o.director,'actors':o.actors,'image_uri':o.image_uri}
+		# print "almost"
+		if MovieLikes.objects.filter(user=user,movie=o).exists():
+			movie_data['rel']='like'
+		elif MovieDislikes.objects.filter(user=user,movie=o).exists():
+			movie_data['rel']='dislike'
+		else:
+			movie_data['rel']='none'
+
+		data.append(movie_data)
+
+
+	movie_list_json = json.dumps({"movies":data})
 
 	return HttpResponse(movie_list_json,content_type='application/json')
 

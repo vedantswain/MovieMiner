@@ -40,20 +40,28 @@ def saveIMDBTop(request):
     store_top250()
     return HttpResponse(status=201)
 
-@require_GET
-def browse_movies(request,genre):
-    response=browse_by_genre(genre,request.GET.get('page','1'))
-    return response
+class BrowseViewSet(APIView):
+    def get(self,request,genre):
+        user=request.user
+        print user
+        user_profile=UserProfile.objects.get(auth_user=user)
+        response=browse_by_genre(user_profile,genre,request.GET.get('page','1'))
+        return response
 
-@require_GET
-def search_movies(request):
-    q=request.GET.get('q','')
-    query=q.encode('utf8')
-    access_token=request.GET.get('access_token','')
-    if query=='':
-        return HttpResponse(status=200)
-    response=search_by_title(query,access_token)
-    return response
+class SearchViewSet(APIView):
+    def get(self,request):
+        print "in search"
+        q=request.GET.get('q','')
+        query=q.encode('utf8')
+        access_token=request.GET.get('access_token','')
+        if query=='':
+            return HttpResponse(status=200)
+        user=request.user
+        print user
+        # print request.META.get('HTTP_AUTHORIZATION')
+        user_profile=UserProfile.objects.get(auth_user=user)
+        response=search_by_title(user_profile,query,access_token)
+        return response
 
 # def testing(request):
 #     resp=omdb.request(t="Gone Girl",fullplot=True,tomatoes=True,type="movie")
