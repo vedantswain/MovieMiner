@@ -3,4 +3,8 @@
     <item name="darkgreen" type="color">#FF669900</item>
     <item name="darkred" type="color">#FFCC0000</item>
     <item name="darkgray" type="color">#ff949494</item>
+    <color name="primary">#ff293c4e</color>
+    <color name="primaryDark">#ff24293a</color>
+    <color name="primaryLight">#fffffefd</color>
+    <color name="accent">#fff5af00</color>
 </resources>
