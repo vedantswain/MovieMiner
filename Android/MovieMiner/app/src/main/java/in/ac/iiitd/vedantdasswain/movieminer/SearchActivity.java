@@ -18,6 +18,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,13 +34,13 @@ import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnSearchMo
 import in.ac.iiitd.vedantdasswain.movieminer.UIClasses.MovieAdapter;
 
 
-public class SearchActivity extends ActionBarActivity implements OnSearchMoviesTaskCompleted{
+public class SearchActivity extends ActionBarActivity implements OnSearchMoviesTaskCompleted, ObservableScrollViewCallbacks {
     static final String TAG="SearchActivity";
     private static String authToken=""; //Django server token
     private static String accessToken=""; //Facebook token
     private static long id;
     private String query;
-    RecyclerView movieRecyclerView;
+    ObservableRecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     ArrayList<MovieObject> movieList;
@@ -113,7 +117,8 @@ public class SearchActivity extends ActionBarActivity implements OnSearchMoviesT
     }
 
     private void setupRecyclerView() {
-        movieRecyclerView=(RecyclerView)findViewById(R.id.search_movie_recycler_view);
+        movieRecyclerView=(ObservableRecyclerView)findViewById(R.id.search_movie_recycler_view);
+        movieRecyclerView.setScrollViewCallbacks(this);
 //        movieRecyclerView.setHasFixedSize(true);
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -181,6 +186,30 @@ public class SearchActivity extends ActionBarActivity implements OnSearchMoviesT
             mAdapter = new MovieAdapter(this,movieList);
 //            Log.v(TAG,"setting adapter");
             movieRecyclerView.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
+    public void onScrollChanged(int i, boolean b, boolean b2) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        if (scrollState == ScrollState.UP) {
+            if (ab.isShowing()) {
+                ab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!ab.isShowing()) {
+                ab.show();
+            }
         }
     }
 }

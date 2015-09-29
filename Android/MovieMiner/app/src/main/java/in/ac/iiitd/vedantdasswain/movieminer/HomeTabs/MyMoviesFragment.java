@@ -15,12 +15,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import in.ac.iiitd.vedantdasswain.movieminer.HomeActivity;
 import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.GetMoviesTask;
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnGetMoviesTaskCompleted;
@@ -35,13 +40,13 @@ import in.ac.iiitd.vedantdasswain.movieminer.UIClasses.MovieAdapter;
  * Use the {@link MyMoviesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyMoviesFragment extends Fragment implements OnGetMoviesTaskCompleted {
+public class MyMoviesFragment extends Fragment implements OnGetMoviesTaskCompleted, ObservableScrollViewCallbacks {
     private static String authToken=""; //Django server token
     private static String accessToken=""; //Facebook token
     private static long id;
     private static final String TAG="MyMoviesFragment";
     private String TYPE="type";
-    RecyclerView movieRecyclerView;
+    ObservableRecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     ArrayList<MovieObject> movieList;
@@ -130,6 +135,30 @@ public class MyMoviesFragment extends Fragment implements OnGetMoviesTaskComplet
         mListener = null;
     }
 
+    @Override
+    public void onScrollChanged(int i, boolean b, boolean b2) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        android.support.v7.app.ActionBar ab = ((HomeActivity)getActivity()).getSupportActionBar();
+        if (scrollState == ScrollState.UP) {
+            if (ab.isShowing()) {
+                ab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!ab.isShowing()) {
+                ab.show();
+            }
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -146,12 +175,12 @@ public class MyMoviesFragment extends Fragment implements OnGetMoviesTaskComplet
     }
 
     private void setupRecyclerView() {
-        movieRecyclerView=(RecyclerView)rootView.findViewById(R.id.my_movie_recycler_view);
+        movieRecyclerView=(ObservableRecyclerView)rootView.findViewById(R.id.my_movie_recycler_view);
+        movieRecyclerView.setScrollViewCallbacks(this);
 //        movieRecyclerView.setHasFixedSize(true);
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(getActivity());
 //        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
         movieRecyclerView.setLayoutManager(mLayoutManager);
 
         movieRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {

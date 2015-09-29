@@ -10,6 +10,10 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
+
 import java.util.ArrayList;
 
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.GenreObject;
@@ -17,7 +21,7 @@ import in.ac.iiitd.vedantdasswain.movieminer.R;
 import in.ac.iiitd.vedantdasswain.movieminer.UIClasses.GenreAdapter;
 
 
-public class BrowseHomeActivity extends ActionBarActivity {
+public class BrowseHomeActivity extends ActionBarActivity implements ObservableScrollViewCallbacks {
 
     public final static String EXTRA_MESSAGE = "in.ac.iiitd.vedantdasswain.movieminer.MESSAGE";
     private static long id;
@@ -31,7 +35,7 @@ public class BrowseHomeActivity extends ActionBarActivity {
     R.mipmap.ic_genre_history,R.mipmap.ic_genre_horror,R.mipmap.ic_genre_music,R.mipmap.ic_genre_musical,
     R.mipmap.ic_genre_mystery,R.mipmap.ic_genre_romance,R.mipmap.ic_genre_scifi,R.mipmap.ic_genre_sports,
     R.mipmap.ic_genre_thriller,R.mipmap.ic_genre_war,R.mipmap.ic_genre_western};
-    RecyclerView movieRecyclerView;
+    ObservableRecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     ArrayList<GenreObject> genreList=new ArrayList<GenreObject>();
@@ -90,7 +94,8 @@ public class BrowseHomeActivity extends ActionBarActivity {
     }
 
     private void setupRecyclerView() {
-        movieRecyclerView=(RecyclerView)findViewById(R.id.browse_genre_recycler_view);
+        movieRecyclerView=(ObservableRecyclerView)findViewById(R.id.browse_genre_recycler_view);
+        movieRecyclerView.setScrollViewCallbacks(this);
 //        movieRecyclerView.setHasFixedSize(true);
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
@@ -99,4 +104,27 @@ public class BrowseHomeActivity extends ActionBarActivity {
         movieRecyclerView.setLayoutManager(mLayoutManager);
     }
 
+    @Override
+    public void onScrollChanged(int i, boolean b, boolean b2) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        if (scrollState == ScrollState.UP) {
+            if (ab.isShowing()) {
+                ab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!ab.isShowing()) {
+                ab.show();
+            }
+        }
+    }
 }
