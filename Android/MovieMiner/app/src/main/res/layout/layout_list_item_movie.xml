@@ -14,8 +14,8 @@
         card_view:cardCornerRadius="5dp">
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="10dp">
 
             <ImageView
@@ -33,7 +33,9 @@
                 android:text="Movie Title"
                 android:id="@+id/titleTextView"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/posterImageView" />
+                android:layout_toEndOf="@+id/posterImageView"
+                android:visibility="visible"
+                android:textSize="18dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,7 +46,8 @@
                 android:layout_below="@+id/titleTextView"
                 android:layout_toEndOf="@+id/posterImageView"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:textSize="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -54,7 +57,8 @@
                 android:id="@+id/actorTextView"
                 android:layout_below="@+id/directorTextView"
                 android:layout_toEndOf="@+id/posterImageView"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:textSize="14dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,7 +67,8 @@
                 android:text="Genres: Genre1, Genre2..."
                 android:id="@+id/genreTextView"
                 android:layout_below="@+id/actorTextView"
-                android:layout_toEndOf="@+id/posterImageView" />
+                android:layout_toEndOf="@+id/posterImageView"
+                android:visibility="invisible" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -80,6 +85,33 @@
                 android:src="@mipmap/ic_downvote"
                 android:layout_below="@+id/posterImageView"
                 android:layout_alignParentStart="true" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/genreLL"
+                android:layout_above="@+id/upvoteImageView"
+                android:layout_alignEnd="@+id/genreTextView"
+                android:layout_alignStart="@+id/genreTextView">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/genreImageView1" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/genreImageView2"
+                    android:layout_marginLeft="10dp" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/genreImageView3"
+                    android:layout_marginLeft="10dp" />
+            </LinearLayout>
 
         </RelativeLayout>
 

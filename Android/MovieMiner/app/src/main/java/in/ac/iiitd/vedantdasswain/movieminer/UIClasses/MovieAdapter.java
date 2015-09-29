@@ -9,11 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.MovieRelationTask;
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
@@ -33,6 +35,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     final int upvoted=R.mipmap.ic_upvoted;
     final int downvote=R.mipmap.ic_downvote;
     final int downvoted=R.mipmap.ic_downvoted;
+
+    String[] genres = new String[] {"Action","Adventure","Animation","Biography","Comedy","Crime","Documentary","Drama",
+            "Family","Fantasy","Film-Noir","History","Horror","Music","Musical","Mystery","Romance","Sci-Fi","Sport","Thriller",
+            "War","Western"};
+    int[] icons = new int[]{R.mipmap.ic_genre_action,R.mipmap.ic_genre_adventure,R.mipmap.ic_genre_animated,
+            R.mipmap.ic_genre_bipoic,R.mipmap.ic_genre_comedy,R.mipmap.ic_genre_crime,R.mipmap.ic_genre_documentary,
+            R.mipmap.ic_genre_drama,R.mipmap.ic_genre_family,R.mipmap.ic_genre_fantasy,R.mipmap.ic_genre_noir,
+            R.mipmap.ic_genre_history,R.mipmap.ic_genre_horror,R.mipmap.ic_genre_music,R.mipmap.ic_genre_musical,
+            R.mipmap.ic_genre_mystery,R.mipmap.ic_genre_romance,R.mipmap.ic_genre_scifi,R.mipmap.ic_genre_sports,
+            R.mipmap.ic_genre_thriller,R.mipmap.ic_genre_war,R.mipmap.ic_genre_western};
+
+    HashMap<String,Integer> genreIcons = new HashMap<String,Integer>();
 
     private void getCredentials() {
         SharedPreferences appPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -72,6 +86,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public TextView actorTextView;
         public TextView directorTextView;
         public TextView genreTextView;
+        public ImageView genreImageView1;
+        public ImageView genreImageView2;
+        public ImageView genreImageView3;
         public ImageView posterImageView;
         public ImageView upvoteImageView;
         public ImageView downvoteImageView;
@@ -90,6 +107,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             downvoteImageView=(ImageView)v.findViewById(R.id.downvoteImageView);
             upvoteImageView.setOnClickListener(this);
             downvoteImageView.setOnClickListener(this);
+
+            LinearLayout ll=(LinearLayout)v.findViewById(R.id.genreLL);
+            genreImageView1=(ImageView)ll.findViewById(R.id.genreImageView1);
+            genreImageView2=(ImageView)ll.findViewById(R.id.genreImageView2);
+            genreImageView3=(ImageView)ll.findViewById(R.id.genreImageView3);
         }
 
         @Override
@@ -173,6 +195,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         viewHolder.directorTextView.setText(movieObjects.get(i).getDirector());
         viewHolder.genreTextView.setText(movieObjects.get(i).getGenre());
 
+        String[] mgenres = movieObjects.get(i).getGenre().split(",");
+
         if(movieObjects.get(i).getRel().equals("liked")){
             viewHolder.upvoteImageView.setImageResource(R.mipmap.ic_upvoted);
         }
@@ -188,6 +212,28 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Glide.with(context)
                 .load(movieObjects.get(i).getImageUri())
                 .into(viewHolder.posterImageView);
+
+        fillHM();
+//        Log.v(TAG,""+genreIcons.get(mgenres[0]));
+        if(0<mgenres.length) {
+            int gi=genreIcons.get(mgenres[0]);
+            viewHolder.genreImageView1.setImageResource(gi);
+        }
+        if(1<mgenres.length) {
+            int gi=genreIcons.get(mgenres[1].substring(1));
+            viewHolder.genreImageView2.setImageResource(gi);
+        }
+        if(2<mgenres.length) {
+            int gi=genreIcons.get(mgenres[2].substring(1));
+            viewHolder.genreImageView3.setImageResource(gi);
+        }
+    }
+
+    public void fillHM(){
+        for(int i=0;i<genres.length;i++){
+            genreIcons.put(genres[i],icons[i]);
+//            Log.v(TAG,genres[i]+" "+genreIcons.get(genres[i]));
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
