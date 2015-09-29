@@ -58,7 +58,7 @@
                 android:layout_below="@+id/directorTextView"
                 android:layout_toEndOf="@+id/posterImageView"
                 android:layout_marginBottom="10dp"
-                android:textSize="14dp" />
+                android:textSize="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"

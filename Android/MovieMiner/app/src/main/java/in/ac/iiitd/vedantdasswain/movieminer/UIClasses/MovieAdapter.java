@@ -1,6 +1,7 @@
 package in.ac.iiitd.vedantdasswain.movieminer.UIClasses;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.MovieRelationTask;
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnMovieRelationTaskCompleted;
 import in.ac.iiitd.vedantdasswain.movieminer.R;
+import in.ac.iiitd.vedantdasswain.movieminer.TitleActivity;
 
 /**
  * Created by vedantdasswain on 26/03/15.
@@ -92,6 +94,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public ImageView posterImageView;
         public ImageView upvoteImageView;
         public ImageView downvoteImageView;
+        public View mainView;
         public viewHolderClicks mListener;
 //        String imageUri;
 
@@ -107,6 +110,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             downvoteImageView=(ImageView)v.findViewById(R.id.downvoteImageView);
             upvoteImageView.setOnClickListener(this);
             downvoteImageView.setOnClickListener(this);
+            mainView=v;
+            mainView.setOnClickListener(this);
 
             LinearLayout ll=(LinearLayout)v.findViewById(R.id.genreLL);
             genreImageView1=(ImageView)ll.findViewById(R.id.genreImageView1);
@@ -124,11 +129,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     mListener.onDownvote(v,(MovieObject)v.getTag(R.string.movie_object_id),(ImageView)v.getTag(R.string.sibling_id));
                 }
             }
+            else
+                mListener.openMovie((MovieObject)v.getTag(R.string.movie_object_id));
         }
 
         public static interface viewHolderClicks {
             public void onUpvote(View icon,MovieObject mo,ImageView sibling);
             public void onDownvote(View icon,MovieObject mo,ImageView sibling);
+            public void openMovie(MovieObject mo);
         }
     }
 
@@ -179,6 +187,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     postRelTask("undislike",mo,icon, sibling);
                 }
             }
+
+            @Override
+            public void openMovie(MovieObject mo) {
+                Intent intent=new Intent(context.getApplicationContext(), TitleActivity.class);
+                intent.putExtra("fb_id",mo.getFb_id());
+                intent.putExtra("imdb_id",mo.getImdb_id());
+                intent.putExtra("title",mo.getTitle());
+                intent.putExtra("director",mo.getDirector());
+                intent.putExtra("actors",mo.getActors());
+                intent.putExtra("genre",mo.getGenre());
+                intent.putExtra("rel",mo.getRel());
+                intent.putExtra("imageURI",mo.getImageUri());
+                context.startActivity(intent);
+            }
         });
         return vh;
     }
@@ -202,6 +224,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
         viewHolder.upvoteImageView.setTag(R.string.movie_object_id,movieObjects.get(i));
         viewHolder.upvoteImageView.setTag(R.string.sibling_id,viewHolder.downvoteImageView);
+        viewHolder.mainView.setTag(R.string.movie_object_id,movieObjects.get(i));
 
         if(movieObjects.get(i).getRel().equals("disliked")){
             viewHolder.downvoteImageView.setImageResource(R.mipmap.ic_downvoted);
