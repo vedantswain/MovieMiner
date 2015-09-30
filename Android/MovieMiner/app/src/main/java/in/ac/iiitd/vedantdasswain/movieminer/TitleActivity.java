@@ -1,6 +1,5 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -40,7 +39,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
     String rating;
     String year;
 
-    ProgressDialog pd;
+//    ProgressDialog pd;
 
 
     private View mImageView;
@@ -85,11 +84,12 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
         mOverlayView = findViewById(R.id.overlay);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
         mScrollView.setScrollViewCallbacks(this);
-        mPlotView = (TextView) findViewById(R.id.plotTextView);
+        mPlotView = (TextView) findViewById(R.id.plotView);
+//        mPlotView.setText("");
         mTitleView = (TextView) findViewById(R.id.title);
         mTitleView.setText(title);
 
-        pd=new ProgressDialog(this);
+//        pd=new ProgressDialog(this);
 
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
@@ -99,7 +99,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
         });
 
         setTitle(null);
-        pd.show();
+//        pd.show();
         fetchMovie(imdb_id);
     }
 
@@ -168,7 +168,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
             JSONObject jsonResponse = new JSONObject(msg);
             Log.v(TAG, jsonResponse.toString());
             parseJSON(jsonResponse);
-            pd.dismiss();
+//            pd.dismiss();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -177,7 +177,6 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
     private void parseJSON(JSONObject jsonResponse) {
         try {
             plot=jsonResponse.getString("Plot");
-            mPlotView.setText(plot+plot+plot);
             year=jsonResponse.getString("Year");
             rating=jsonResponse.getString("imdbRating");
 
