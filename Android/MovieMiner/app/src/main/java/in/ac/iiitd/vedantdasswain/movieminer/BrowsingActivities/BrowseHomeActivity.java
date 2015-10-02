@@ -16,6 +16,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import java.util.ArrayList;
 
+import in.ac.iiitd.vedantdasswain.movieminer.Common;
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.GenreObject;
 import in.ac.iiitd.vedantdasswain.movieminer.R;
 import in.ac.iiitd.vedantdasswain.movieminer.UIClasses.GenreAdapter;
@@ -26,15 +27,7 @@ public class BrowseHomeActivity extends ActionBarActivity implements ObservableS
     public final static String EXTRA_MESSAGE = "in.ac.iiitd.vedantdasswain.movieminer.MESSAGE";
     private static long id;
     private static final String TAG="BrowseHomeActivity";
-    String[] genres = new String[] {"Action","Adventure","Animation","Biography","Comedy","Crime","Documentary","Drama",
-    "Family","Fantasy","Film-Noir","History","Horror","Music","Musical","Mystery","Romance","Sci-Fi","Sport","Thriller",
-    "War","Western"};
-    int[] icons = new int[]{R.mipmap.ic_genre_action,R.mipmap.ic_genre_adventure,R.mipmap.ic_genre_animated,
-    R.mipmap.ic_genre_bipoic,R.mipmap.ic_genre_comedy,R.mipmap.ic_genre_crime,R.mipmap.ic_genre_documentary,
-    R.mipmap.ic_genre_drama,R.mipmap.ic_genre_family,R.mipmap.ic_genre_fantasy,R.mipmap.ic_genre_noir,
-    R.mipmap.ic_genre_history,R.mipmap.ic_genre_horror,R.mipmap.ic_genre_music,R.mipmap.ic_genre_musical,
-    R.mipmap.ic_genre_mystery,R.mipmap.ic_genre_romance,R.mipmap.ic_genre_scifi,R.mipmap.ic_genre_sports,
-    R.mipmap.ic_genre_thriller,R.mipmap.ic_genre_war,R.mipmap.ic_genre_western};
+
     ObservableRecyclerView movieRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -87,8 +80,8 @@ public class BrowseHomeActivity extends ActionBarActivity implements ObservableS
     }
 
     private void setupGenres(){
-        for (int i=0;i<genres.length;i++){
-            GenreObject newGenre=new GenreObject(genres[i],icons[i]);
+        for (int i=0;i< Common.genres.length;i++){
+            GenreObject newGenre=new GenreObject(Common.genres[i],Common.icons[i]);
             genreList.add(newGenre);
         }
     }

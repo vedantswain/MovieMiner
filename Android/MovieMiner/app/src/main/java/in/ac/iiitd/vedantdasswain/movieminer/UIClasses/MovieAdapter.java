@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import in.ac.iiitd.vedantdasswain.movieminer.Common;
 import in.ac.iiitd.vedantdasswain.movieminer.HttpTasks.MovieRelationTask;
 import in.ac.iiitd.vedantdasswain.movieminer.ObjectClasses.MovieObject;
 import in.ac.iiitd.vedantdasswain.movieminer.OnTaskCompletedListeners.OnMovieRelationTaskCompleted;
@@ -33,20 +34,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     static final String TAG="MovieAdapter";
     String authToken;
 
-    final int upvote=R.mipmap.ic_upvote;
-    final int upvoted=R.mipmap.ic_upvoted;
-    final int downvote=R.mipmap.ic_downvote;
-    final int downvoted=R.mipmap.ic_downvoted;
 
-    String[] genres = new String[] {"Action","Adventure","Animation","Biography","Comedy","Crime","Documentary","Drama",
-            "Family","Fantasy","Film-Noir","History","Horror","Music","Musical","Mystery","Romance","Sci-Fi","Sport","Thriller",
-            "War","Western"};
-    int[] icons = new int[]{R.mipmap.ic_genre_action,R.mipmap.ic_genre_adventure,R.mipmap.ic_genre_animated,
-            R.mipmap.ic_genre_bipoic,R.mipmap.ic_genre_comedy,R.mipmap.ic_genre_crime,R.mipmap.ic_genre_documentary,
-            R.mipmap.ic_genre_drama,R.mipmap.ic_genre_family,R.mipmap.ic_genre_fantasy,R.mipmap.ic_genre_noir,
-            R.mipmap.ic_genre_history,R.mipmap.ic_genre_horror,R.mipmap.ic_genre_music,R.mipmap.ic_genre_musical,
-            R.mipmap.ic_genre_mystery,R.mipmap.ic_genre_romance,R.mipmap.ic_genre_scifi,R.mipmap.ic_genre_sports,
-            R.mipmap.ic_genre_thriller,R.mipmap.ic_genre_war,R.mipmap.ic_genre_western};
 
     HashMap<String,Integer> genreIcons = new HashMap<String,Integer>();
 
@@ -60,24 +48,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Log.v(TAG,msg);
         if(!msg.contains("200 OK") && !msg.contains("201 CREATED") ){
             if(rel.equals("like")){
-                ((ImageView) icon).setImageResource(upvote);
+                ((ImageView) icon).setImageResource(Common.upvote);
             }
             else if(rel.equals("dislike")){
-                ((ImageView) icon).setImageResource(downvote);
+                ((ImageView) icon).setImageResource(Common.downvote);
             }
             else if(rel.equals("unlike")){
-                ((ImageView) icon).setImageResource(upvoted);
+                ((ImageView) icon).setImageResource(Common.upvoted);
             }
             else if(rel.equals("undislike")){
-                ((ImageView) icon).setImageResource(downvoted);
+                ((ImageView) icon).setImageResource(Common.downvoted);
             }
         }
         else{
             if(rel.equals("like")){
-                sibling.setImageResource(downvote);
+                sibling.setImageResource(Common.downvote);
             }
             else if(rel.equals("dislike")){
-                sibling.setImageResource(upvote);
+                sibling.setImageResource(Common.upvote);
             }
         }
     }
@@ -161,12 +149,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 ImageView icon_button=(ImageView)icon;
                 Log.v(TAG,"clicking upvote "+mo.getRel());
                 if(mo.getRel().equals("none") || mo.getRel().equals("disliked")){
-                    icon_button.setImageResource(upvoted);
+                    icon_button.setImageResource(Common.upvoted);
                     mo.setRel("liked");
                     postRelTask("like", mo, icon, sibling);
                 }
                 else if(mo.getRel().equals("liked")){
-                    icon_button.setImageResource(upvote);
+                    icon_button.setImageResource(Common.upvote);
                     mo.setRel("none");
                     postRelTask("unlike", mo, icon, sibling);
                 }
@@ -177,12 +165,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 ImageView icon_button=(ImageView)icon;
                 Log.v(TAG,"clicking downvote "+mo.getRel());
                 if(mo.getRel().equals("none") || mo.getRel().equals("liked")){
-                    icon_button.setImageResource(downvoted);
+                    icon_button.setImageResource(Common.downvoted);
                     mo.setRel("disliked");
                     postRelTask("dislike",mo,icon, sibling);
                 }
                 else if(mo.getRel().equals("disliked")){
-                    icon_button.setImageResource(downvote);
+                    icon_button.setImageResource(Common.downvote);
                     mo.setRel("none");
                     postRelTask("undislike",mo,icon, sibling);
                 }
@@ -253,8 +241,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void fillHM(){
-        for(int i=0;i<genres.length;i++){
-            genreIcons.put(genres[i],icons[i]);
+        for(int i=0;i< Common.genres.length;i++){
+            genreIcons.put(Common.genres[i],Common.icons[i]);
 //            Log.v(TAG,genres[i]+" "+genreIcons.get(genres[i]));
         }
     }

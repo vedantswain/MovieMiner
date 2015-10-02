@@ -46,22 +46,64 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/genreLL"
                     android:layout_marginBottom="20dp">
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:id="@+id/genreImageView1" />
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        >
+                        <ImageView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:id="@+id/genreImageView1" />
 
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:id="@+id/genreImageView2"
-                        android:layout_marginLeft="25dp" />
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text=""
+                            android:id="@+id/genreTextView1"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:id="@+id/genreImageView3"
-                        android:layout_marginLeft="25dp" />
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        >
+                        <ImageView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:id="@+id/genreImageView2"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="13dp"/>
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text=""
+                            android:id="@+id/genreTextView2"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        >
+                        <ImageView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:id="@+id/genreImageView3"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="13dp" />
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text=""
+                            android:id="@+id/genreTextView3"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -75,16 +117,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Year "
                         android:id="@+id/textView"
                         android:textStyle="bold|italic"
-                        android:textColor="@color/accent" />
+                        android:textColor="@color/darkgray" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/yearView"
                         android:layout_marginLeft="20dp" />
                 </LinearLayout>
@@ -99,16 +141,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Director "
                         android:id="@+id/textView1"
                         android:textStyle="bold|italic"
-                        android:textColor="@color/accent" />
+                        android:textColor="@color/darkgray" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/directorView"
                         android:layout_marginLeft="20dp" />
 
@@ -124,16 +166,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Actors "
                         android:id="@+id/textView2"
                         android:textStyle="bold|italic"
-                        android:textColor="@color/accent" />
+                        android:textColor="@color/darkgray" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/actorsView"
                         android:layout_marginLeft="20dp" />
 
@@ -149,16 +191,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="IMDb Rating "
                         android:id="@+id/textView3"
                         android:textStyle="bold|italic"
-                        android:textColor="@color/accent" />
+                        android:textColor="@color/darkgray" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/ratingView"
                         android:textStyle="bold"
                         android:layout_marginLeft="20dp" />
@@ -175,16 +217,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Plot Summary "
                         android:id="@+id/textView4"
                         android:textStyle="bold|italic"
-                        android:textColor="@color/accent" />
+                        android:textColor="@color/darkgray" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/plotView"
                         android:layout_marginLeft="20dp" />
 
