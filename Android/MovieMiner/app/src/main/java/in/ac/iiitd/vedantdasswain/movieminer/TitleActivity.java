@@ -1,5 +1,6 @@
 package in.ac.iiitd.vedantdasswain.movieminer;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,8 +48,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
     String rating;
     String year;
 
-//    ProgressDialog pd;
-
+    ProgressDialog pd;
 
     private View mImageView;
     private View mOverlayView;
@@ -171,7 +171,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
         downvoteImageView.setTag(R.string.movie_object_id,mo);
         downvoteImageView.setTag(R.string.sibling_id,upvoteImageView);
 
-//        pd=new ProgressDialog(this);
+        pd=new ProgressDialog(this);
 
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
@@ -181,7 +181,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
         });
 
         setTitle(null);
-//        pd.show();
+        pd.show();
         fetchMovie(imdb_id);
     }
 
@@ -257,7 +257,7 @@ public class TitleActivity extends ActionBarActivity implements ObservableScroll
             JSONObject jsonResponse = new JSONObject(msg);
             Log.v(TAG, jsonResponse.toString());
             parseJSON(jsonResponse);
-//            pd.dismiss();
+            pd.dismiss();
         } catch (JSONException e) {
             e.printStackTrace();
         }
