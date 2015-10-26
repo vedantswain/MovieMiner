@@ -45,8 +45,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void OnTaskCompleted(String msg, MovieObject mo,View icon,ImageView sibling,String rel) {
-        Log.v(TAG,msg);
-        if(!msg.contains("200 OK") && !msg.contains("201 CREATED") ){
+//        Log.v(TAG,msg);
+        if(!msg.contains("200 OK") && !msg.contains("201 Created") ){
+//            Log.d(TAG,"Ghusliyo");
             if(rel.equals("like")){
                 ((ImageView) icon).setImageResource(Common.upvote);
             }
